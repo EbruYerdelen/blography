@@ -1,22 +1,14 @@
 {
-  "name": "blography",
+  "name": "client",
   "version": "0.1.0",
   "private": true,
   "scripts": {
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint",
-    "server": "nodemon server/server.js"
+    "lint": "next lint"
   },
   "dependencies": {
-    "bcryptjs": "^3.0.2",
-    "cookie-parser": "^1.4.7",
-    "cors": "^2.8.5",
-    "dotenv": "^16.4.7",
-    "express": "^4.21.2",
-    "jsonwebtoken": "^9.0.2",
-    "mongoose": "^8.12.1",
     "next": "15.2.1",
     "react": "^19.0.0",
     "react-dom": "^19.0.0"
@@ -29,7 +21,6 @@
     "@types/react-dom": "^19",
     "eslint": "^9",
     "eslint-config-next": "15.2.1",
-    "nodemon": "^3.1.9",
     "tailwindcss": "^4",
     "typescript": "^5"
   }
