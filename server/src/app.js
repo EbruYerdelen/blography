@@ -1,12 +1,21 @@
 require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
-const app = express();
+const cookieParser = require("cookie-parser");
 const AuthRoutes = require("./modules/auth/auth.route")
 
-app.use(cors());
+const app = express();
+app.use(
+  cors({
+    origin: "http://localhost:3000", // Change to your frontend URL in production
+    credentials: true, // Allows cookies to be sent with requests
+  })
+);
+
 app.use(express.json());
+app.use(cookieParser())
 app.use(express.urlencoded({ extended: true }));
+
 
 
 app.use("/auth", AuthRoutes)

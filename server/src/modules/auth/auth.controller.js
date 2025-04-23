@@ -67,38 +67,47 @@ const loginUser = async (req, res) => {
     if (!checkUserInDb) {
       res.status(400).json({
         success: false,
-        message:"User does not exist,please login first."
-      })
+        message: "User does not exist,please login first.",
+      });
       return;
     }
 
-      const isPasswordMatching = await comparePassword(
-        password,
-        checkUserInDb.password
-      );
+    const isPasswordMatching = await comparePassword(
+      password,
+      checkUserInDb.password
+    );
 
-      if (!isPasswordMatching) {
-        return res
-          .status(400)
-          .json({ success: false, message: "Invalid password." });
+    if (!isPasswordMatching) {
+      return res
+        .status(400)
+        .json({ success: false, message: "Invalid password." });
     }
-    
-    
+
     const accessToken = generateToken(checkUserInDb);
     if (!accessToken) {
       res.status(400).json({
         success: false,
-        message:"Login failed,please try again"
-      })
+        message: "Login failed,please try again",
+      });
       return;
     }
+
+    //The cookie is included in the response headers and sent to the client's browser.
+    //When the client receives the response, the browser will store the cookie. On subsequent requests to the same domain, the browser will automatically include the cookie in the request headers, allowing the server to identify the client using the JWT token stored in the cookie.
+    //Once the cookie is stored in the browser, it will automatically be included in the request headers for subsequent requests to the same domain. This means that the cookie will be sent with every request to your server, allowing the server to identify the client using the JWT token stored in the cookie.
+    //This cookie will be included in the request headers for any subsequent requests to your server, not just requests to another route. This allows your server to authenticate the user on any route that requires authentication.
+    //For example, if the user makes a request to /api/protected-route, the browser will automatically include the jwtToken cookie in the request headers,
+    res.cookie("jwtToken", accessToken, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "None",
+      maxAge: 24 * 60 * 60 * 1000,
+    });
 
     res.status(200).json({
       success: true,
       message: "Logged in succesfully",
-      accessToken: accessToken
-    })
-
+    });
   } catch (error) {
     console.error(error);
     res.status(500).json({
@@ -110,7 +119,16 @@ const loginUser = async (req, res) => {
 
 const logoutUser = async (req, res) => {
   try {
+      res.clearCookie("jwtToken", {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === "production",
+        sameSite: "None",
+      });
     
+    res.status(200).json({
+      success: true,
+      message: "Logged out successfully",
+    });
   } catch (error) {
       console.error(error);
       res.status(500).json({
