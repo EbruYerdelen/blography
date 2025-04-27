@@ -1,5 +1,6 @@
 "use client";
 
+import { logout } from "@/app/actions/logout";
 import {
   Collapsible,
   CollapsibleContent,
@@ -18,38 +19,101 @@ import {
 } from "@/components/ui/sidebar";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { cn } from "@/lib/utils";
+import { createDocument, Document, fetchDocuments } from "@/services/document";
 import {
   Check,
   ChevronDown,
+  CuboidIcon as Cube,
   FileText,
   FolderOpen,
   LayoutGrid,
+  Loader2,
+  LogOut,
   PanelRight,
   Plus,
-  CuboidIcon as Cube,
   X,
-  LogOut,
-  Loader2,
 } from "lucide-react";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
-import { useState } from "react";
+import { usePathname, useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
 import { Input } from "./ui/input";
 import { ScrollArea } from "./ui/scroll-area";
-import { logout } from "@/app/actions/logout";
+import { toast } from "sonner";
 
-interface Document {
-  id: string;
-  name: string;
-  content?: string;
-  createdAt?: string;
-  userId: string;
-}
-
-export function MinimalIntegrationSidebar({ documents = [] as Document[] }) {
+export function MinimalIntegrationSidebar() {
   const [isCreatingDoc, setIsCreatingDoc] = useState(false);
   const [newDocName, setNewDocName] = useState("");
   const [isLoggingOut, setIsLoggingOut] = useState(false);
+  const [documents, setDocuments] = useState<Document>();
+  const [isLoading, setIsLoading] = useState(true);
+  const [isCreating, setIsCreating] = useState(false);
+
+  const router = useRouter();
+
+  useEffect(() => {
+    const loadDocuments = async () => {
+      try {
+        const data = await fetchDocuments();
+        setDocuments(data);
+      } catch (error) {
+        console.error("Error fetching documents:", error);
+        toast.error("Failed to fetch documents");
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    loadDocuments();
+  }, []);
+
+  const handleCreateDocument = async () => {
+    if (!newDocName.trim()) return;
+
+    setIsCreating(true);
+    const tempId = Date.now().toString();
+
+    setDocuments((prev) => ({
+      ...prev,
+      data: [
+        ...(prev?.data || []),
+        {
+          _id: tempId,
+          title: newDocName,
+          createdAt: new Date().toISOString(),
+          updatedAt: new Date().toISOString(),
+          userId: "placeholder-user-id",
+        },
+      ],
+    }));
+
+    try {
+      const response = await createDocument(newDocName);
+
+      setDocuments((prev) => ({
+        ...prev,
+        data: (prev?.data || []).map((doc) =>
+          doc._id === tempId ? response?.data : doc
+        ),
+      }));
+
+      router.push(`/docs/${response?.data._id}`);
+
+      toast.success("Document created successfully");
+    } catch (error) {
+      console.error("Error creating document:", error);
+
+      setDocuments((prev) => ({
+        ...prev,
+        data: (prev?.data || []).filter((doc) => doc._id !== tempId),
+      }));
+
+      toast.error("Failed to create document");
+    } finally {
+      setIsCreating(false);
+      setIsCreatingDoc(false);
+      setNewDocName("");
+    }
+  };
 
   const handleLogout = async () => {
     setIsLoggingOut(true);
@@ -60,6 +124,7 @@ export function MinimalIntegrationSidebar({ documents = [] as Document[] }) {
       setIsLoggingOut(false);
     }
   };
+
   const pathname = usePathname();
 
   return (
@@ -139,7 +204,13 @@ export function MinimalIntegrationSidebar({ documents = [] as Document[] }) {
                       <div className="space-y-1">
                         <div className="top-0 sticky ml-4 group-data-[collapsible=icon]:ml-0 px-2 group-data-[collapsible=icon]:px-0 border-border border-l border-dashed">
                           {isCreatingDoc ? (
-                            <form className="group-data-[collapsible=icon]:hidden flex items-center gap-1">
+                            <form
+                              className="group-data-[collapsible=icon]:hidden flex items-center gap-1"
+                              onSubmit={(e) => {
+                                e.preventDefault();
+                                handleCreateDocument();
+                              }}
+                            >
                               <Input
                                 name="name"
                                 placeholder="Document name"
@@ -160,9 +231,14 @@ export function MinimalIntegrationSidebar({ documents = [] as Document[] }) {
                                   size="sm"
                                   tooltip="Create document"
                                   className="w-8 h-8"
-                                  disabled={!newDocName.trim()}
+                                  disabled={!newDocName.trim() || isCreating}
+                                  type="submit"
                                 >
-                                  <Check className="w-4 h-4" />
+                                  {isCreating ? (
+                                    <Loader2 className="w-4 h-4 animate-spin" />
+                                  ) : (
+                                    <Check className="w-4 h-4" />
+                                  )}
                                 </SidebarMenuButton>
                                 <SidebarMenuButton
                                   type="button"
@@ -173,6 +249,7 @@ export function MinimalIntegrationSidebar({ documents = [] as Document[] }) {
                                     setIsCreatingDoc(false);
                                     setNewDocName("");
                                   }}
+                                  disabled={isCreating}
                                 >
                                   <X className="w-4 h-4" />
                                 </SidebarMenuButton>
@@ -186,6 +263,7 @@ export function MinimalIntegrationSidebar({ documents = [] as Document[] }) {
                               className="flex justify-start group-data-[collapsible=icon]:justify-center items-center gap-2 bg-background dark:bg-muted group-data-[collapsible=icon]:pr-0 pl-2 group-data-[collapsible=icon]:pl-0 border border-border w-full h-8 group-data-[collapsible=icon]:size-8 text-sm"
                               onClick={() => setIsCreatingDoc(true)}
                               data-new-doc-trigger
+                              disabled={isCreatingDoc || isCreating}
                             >
                               <Plus className="w-4 h-4 shrink-0" />
                               <span className="group-data-[collapsible=icon]:hidden">
@@ -194,28 +272,35 @@ export function MinimalIntegrationSidebar({ documents = [] as Document[] }) {
                             </SidebarMenuButton>
                           )}
                         </div>
-                        {documents.map((doc) => (
-                          <div
-                            key={doc.id}
-                            className="ml-4 group-data-[collapsible=icon]:ml-0 px-2 group-data-[collapsible=icon]:px-0 border-border border-l border-dashed"
-                          >
-                            <SidebarMenuButton
-                              asChild
-                              tooltip={doc.name}
-                              data-active={
-                                pathname.split("/").at(-1) === doc.id
-                              }
-                              className="flex group-data-[collapsible=icon]:justify-center items-center gap-2 hover:bg-accent px-2 py-1.5 rounded-lg w-full text-muted-foreground text-sm hover:text-accent-foreground"
-                            >
-                              <Link href={`/docs/${doc.id}`}>
-                                <FileText className="w-4 h-4 shrink-0" />
-                                <span className="group-data-[collapsible=icon]:hidden truncate">
-                                  {doc.name}
-                                </span>
-                              </Link>
-                            </SidebarMenuButton>
+                        {isLoading ? (
+                          <div className="flex justify-center ml-4 group-data-[collapsible=icon]:ml-0 px-2 group-data-[collapsible=icon]:px-0 py-2 border-border border-l border-dashed">
+                            <Loader2 className="w-4 h-4 animate-spin" />
                           </div>
-                        ))}
+                        ) : (
+                          Array.isArray(documents?.data) &&
+                          documents?.data?.map((doc) => (
+                            <div
+                              key={doc._id}
+                              className="ml-4 group-data-[collapsible=icon]:ml-0 px-2 group-data-[collapsible=icon]:px-0 border-border border-l border-dashed"
+                            >
+                              <SidebarMenuButton
+                                asChild
+                                tooltip={doc.title}
+                                data-active={
+                                  pathname.split("/").at(-1) === doc._id
+                                }
+                                className="flex group-data-[collapsible=icon]:justify-center items-center gap-2 hover:bg-accent px-2 py-1.5 rounded-lg w-full text-muted-foreground text-sm hover:text-accent-foreground"
+                              >
+                                <Link href={`/docs/${doc._id}`}>
+                                  <FileText className="w-4 h-4 shrink-0" />
+                                  <span className="group-data-[collapsible=icon]:hidden truncate">
+                                    {doc.title}
+                                  </span>
+                                </Link>
+                              </SidebarMenuButton>
+                            </div>
+                          ))
+                        )}
                       </div>
                     </ScrollArea>
                   </CollapsibleContent>
@@ -232,7 +317,11 @@ export function MinimalIntegrationSidebar({ documents = [] as Document[] }) {
                 className="flex group-data-[collapsible=icon]:justify-center items-center gap-2 hover:bg-accent px-2 py-1.5 w-full text-muted-foreground hover:text-foreground text-sm"
                 onClick={handleLogout}
               >
-               {isLoggingOut ? <Loader2 className="w-4 h-4 animate-spin" /> : <LogOut className="w-4 h-4 shrink-0" />}
+                {isLoggingOut ? (
+                  <Loader2 className="w-4 h-4 animate-spin" />
+                ) : (
+                  <LogOut className="w-4 h-4 shrink-0" />
+                )}
                 <span className="group-data-[collapsible=icon]:hidden truncate">
                   Logout
                 </span>

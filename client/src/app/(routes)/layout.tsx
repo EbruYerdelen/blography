@@ -6,7 +6,7 @@ export default function BlogLayout({ children }: { children: ReactNode }) {
   return (
     <SidebarProvider defaultOpen={true}>
       <div className="flex w-full h-screen">
-        <MinimalIntegrationSidebar documents={[]} />
+        <MinimalIntegrationSidebar />
         <main className="flex-1 w-full overflow-auto">{children}</main>
       </div>
     </SidebarProvider>
