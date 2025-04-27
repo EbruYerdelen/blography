@@ -296,3 +296,7 @@ body {
   perspective: 300rem;
   background: var(--background);
 }
+
+.ProseMirror {
+  background: transparent !important;
+}
