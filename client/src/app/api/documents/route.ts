@@ -1,5 +1,6 @@
 import { cookies } from "next/headers";
 import { NextResponse } from "next/server";
+import { revalidateTag } from "next/cache";
 
 export async function POST(request: Request) {
   try {
@@ -29,18 +30,7 @@ export async function POST(request: Request) {
     }
 
     const newDocument = await response.json();
-
-    // Revalidate the documents cache
-    const revalidateResponse = await fetch(
-      "http://localhost:3000/api/revalidate?tag=documents",
-      {
-        method: "GET",
-      }
-    );
-
-    if (!revalidateResponse.ok) {
-      console.error("Failed to revalidate documents cache");
-    }
+    revalidateTag("documents");
 
     return NextResponse.json(newDocument);
   } catch (error) {
@@ -56,7 +46,7 @@ export async function GET() {
   try {
     const cookieStore = cookies();
     const token = (await cookieStore).get("token")?.value;
-    console.log(token);
+
     if (!token) {
       return NextResponse.json(
         { error: "Unauthorized - No token found" },
@@ -72,10 +62,9 @@ export async function GET() {
       },
       next: {
         tags: ["documents"],
+        revalidate: 60,
       },
     });
-
-    console.log("Response status:", response);
 
     if (!response.ok) {
       throw new Error(`Backend responded with ${response.status}`);

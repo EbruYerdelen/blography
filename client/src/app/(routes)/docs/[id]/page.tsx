@@ -1,24 +1,7 @@
-"use client";
-
-import React from "react";
-import dynamic from "next/dynamic";
-import { EditorSkeleton } from "./_components/editor-skeleton";
 import Image from "next/image";
-
-const Editor = dynamic(
-  () => import("./_components/editor").then((mod) => mod.Editor),
-  {
-    ssr: false,
-    loading: () => <EditorSkeleton />,
-  }
-);
+import EditorWrapper from "./_components/editor-wrapper";
 
 const Docs = () => {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const handleContentChange = (content: any) => {
-    console.log("Debounced content:", content);
-  };
-
   return (
     <div className="relative py-6">
       <Image
@@ -32,7 +15,7 @@ const Docs = () => {
         <h1 className="font-semibold text-white text-3xl">New Document</h1>
         <p className="text-neutral-400 text-sm">Updated at: 27/04/2025</p>
       </div>
-      <Editor onDebouncedChange={handleContentChange} />
+      <EditorWrapper />
     </div>
   );
 };
