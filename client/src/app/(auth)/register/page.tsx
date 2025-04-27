@@ -17,6 +17,9 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
+import { toast } from "sonner";
+import { registerUser } from "@/app/actions/register";
+import { useRouter } from "next/navigation";
 
 const formSchema = z
   .object({
@@ -39,6 +42,7 @@ const formSchema = z
 export default function RegisterPage() {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const router = useRouter();
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -50,13 +54,21 @@ export default function RegisterPage() {
     },
   });
 
-  function onSubmit(values: z.infer<typeof formSchema>) {
-    // Log the form values as requested
-    console.log({
+  async function onSubmit(values: z.infer<typeof formSchema>) {
+    const userData = {
       username: values.username,
       email: values.email,
       password: values.password,
-    });
+    };
+
+    const result = await registerUser(userData);
+
+    if (result.success) {
+      toast.success(result.message);
+      router.push("/login");
+    } else {
+      toast.error(result.message);
+    }
   }
 
   return (
