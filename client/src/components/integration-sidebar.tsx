@@ -19,7 +19,7 @@ import {
 } from "@/components/ui/sidebar";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { cn } from "@/lib/utils";
-import { Document } from "@/services/document";
+import { createDocument, Document, fetchDocuments } from "@/services/document";
 import {
   Check,
   ChevronDown,
@@ -49,15 +49,9 @@ export function MinimalIntegrationSidebar() {
   const [isCreating, setIsCreating] = useState(false);
 
   useEffect(() => {
-    const fetchDocuments = async () => {
+    const loadDocuments = async () => {
       try {
-        const response = await fetch("/api/documents", {
-          next: { tags: ["documents"] },
-        });
-
-        if (!response.ok) throw new Error("Failed to fetch");
-
-        const data = await response.json();
+        const data = await fetchDocuments();
         setDocuments(data);
       } catch (error) {
         console.error("Error fetching documents:", error);
@@ -67,16 +61,15 @@ export function MinimalIntegrationSidebar() {
       }
     };
 
-    fetchDocuments();
+    loadDocuments();
   }, []);
 
   const handleCreateDocument = async () => {
     if (!newDocName.trim()) return;
 
     setIsCreating(true);
-    const tempId = Date.now().toString(); // For optimistic update
+    const tempId = Date.now().toString();
 
-    // Optimistic update
     setDocuments((prev) => ({
       ...prev,
       data: [
@@ -86,30 +79,18 @@ export function MinimalIntegrationSidebar() {
           title: newDocName,
           createdAt: new Date().toISOString(),
           updatedAt: new Date().toISOString(),
-          userId: "placeholder-user-id", // Add a placeholder userId
+          userId: "placeholder-user-id",
         },
       ],
     }));
 
     try {
-      const response = await fetch("/api/documents", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ title: newDocName }),
-      });
+      const response = await createDocument(newDocName);
 
-      if (!response.ok) throw new Error("Failed to create document");
-
-      const newDocument = await response.json();
-      console.log("New document created:", newDocument);
-
-      // Update the documents list with the actual data from server
       setDocuments((prev) => ({
         ...prev,
         data: (prev?.data || []).map((doc) =>
-          doc._id === tempId ? newDocument?.data : doc
+          doc._id === tempId ? response?.data : doc
         ),
       }));
 
@@ -117,7 +98,6 @@ export function MinimalIntegrationSidebar() {
     } catch (error) {
       console.error("Error creating document:", error);
 
-      // Rollback optimistic update
       setDocuments((prev) => ({
         ...prev,
         data: (prev?.data || []).filter((doc) => doc._id !== tempId),
