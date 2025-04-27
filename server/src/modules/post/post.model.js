@@ -1,11 +1,7 @@
-const mongoose = require("mongoose")
+const mongoose = require("mongoose");
 
 const PostSchema = new mongoose.Schema({
   title: {
-    type: String,
-    required: true,
-  },
-  description: {
     type: String,
     required: true,
   },
@@ -18,12 +14,8 @@ const PostSchema = new mongoose.Schema({
     type: Date,
     default: Date.now(),
   },
-  imageUrl: {
-    type: String,
-    required: false,
-  },
-  videoUrl: {
-    type: String,
+  content: {
+    type: mongoose.Schema.Types.Mixed,
     required: false,
   },
 });

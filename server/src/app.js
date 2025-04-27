@@ -3,6 +3,7 @@ const express = require('express');
 const cors = require('cors');
 const cookieParser = require("cookie-parser");
 const AuthRoutes = require("./modules/auth/auth.route")
+const PostRoutes = require("./modules/post/post.route")
 
 const app = express();
 app.use(
@@ -19,6 +20,7 @@ app.use(express.urlencoded({ extended: true }));
 
 
 app.use("/auth", AuthRoutes)
+app.use("/post", PostRoutes)
 
 //any type of req to any route will be catched by the root route handler,so place this below all your handlers because order of middleware execution matters
 app.use("/", (req, res) => {
