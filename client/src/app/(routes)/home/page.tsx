@@ -36,7 +36,13 @@ const HomePage = async () => {
             documents.slice(0, 5)?.map((document: any, i: number) => (
               <div
                 key={document._id}
-                className={`flex justify-between items-end p-4 border border-[#404040] w-full cursor-pointer ${i === 0 ? "rounded-t-md border-b-0 " : ""} ${i === documents.length - 1 ? "rounded-b-md" : "border-b-0 "}`}
+                className={`flex justify-between items-end p-4 border border-[#404040] w-full cursor-pointer ${i === 0 ? "rounded-t-md" : ""} ${
+                  i === documents.length - 1
+                    ? documents.length === 1
+                      ? "rounded-md"
+                      : "rounded-b-md"
+                    : "border-b-0"
+                }`}
               >
                 <div className="flex items-center gap-2">
                   <div className="flex justify-center items-center bg-blue-500/5 mt-1 border border-border/40 rounded-sm w-8 h-8 text-blue-500 shrink-0">

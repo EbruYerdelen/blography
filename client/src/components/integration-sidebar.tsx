@@ -34,7 +34,7 @@ import {
   X,
 } from "lucide-react";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { Input } from "./ui/input";
 import { ScrollArea } from "./ui/scroll-area";
@@ -47,6 +47,8 @@ export function MinimalIntegrationSidebar() {
   const [documents, setDocuments] = useState<Document>();
   const [isLoading, setIsLoading] = useState(true);
   const [isCreating, setIsCreating] = useState(false);
+
+  const router = useRouter();
 
   useEffect(() => {
     const loadDocuments = async () => {
@@ -93,6 +95,8 @@ export function MinimalIntegrationSidebar() {
           doc._id === tempId ? response?.data : doc
         ),
       }));
+
+      router.push(`/docs/${response?.data._id}`);
 
       toast.success("Document created successfully");
     } catch (error) {
