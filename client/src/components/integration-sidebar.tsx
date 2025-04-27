@@ -54,7 +54,7 @@ export function MinimalIntegrationSidebar({ documents = [] as Document[] }) {
         collapsible="icon"
         className="relative flex flex-col bg-background border-r border-border text-foreground transition-all duration-300 ease-in-out"
       >
-        {/* Header with Text0 Logo */}
+        {/* Header with Blography Logo */}
         <SidebarHeader className="flex flex-row group-data-[collapsible=icon]:flex-col justify-between w-full">
           <div className="flex items-center gap-2">
             <Link
@@ -63,7 +63,7 @@ export function MinimalIntegrationSidebar({ documents = [] as Document[] }) {
                 "flex items-center gap-2",
                 "group-data-[collapsible=icon]:flex-col"
               )}
-              aria-label="Text0 Home"
+              aria-label="Blography Home"
             >
               <Cube className="ml-1 w-6 h-6" />
               <span className="group-data-[collapsible=icon]:hidden font-semibold text-foreground">
