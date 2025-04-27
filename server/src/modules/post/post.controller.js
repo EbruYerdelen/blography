@@ -38,7 +38,7 @@ class PostController {
           .status(404)
           .json({ success: false, message: "Post not found" });
       }
-      if (post.user.toString() !== req.user._id) {
+      if (post.user.toString() !== req.user.userId) {
         return res
           .status(403)
           .json({ success: false, message: "Unauthorized" });
