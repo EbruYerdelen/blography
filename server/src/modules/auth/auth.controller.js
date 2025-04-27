@@ -71,7 +71,7 @@ const loginUser = async (req, res) => {
     if (!checkUserInDb) {
       res.status(400).json({
         success: false,
-        message: "User does not exist,please login first.",
+        message: "User does not exist, Please register first.",
       });
       return;
     }
@@ -111,6 +111,7 @@ const loginUser = async (req, res) => {
     res.status(200).json({
       success: true,
       message: "Logged in succesfully",
+      token: accessToken,
     });
   } catch (error) {
     console.error(error);

@@ -19,6 +19,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
 import { registerUser } from "@/app/actions/register";
+import { useRouter } from "next/navigation";
 
 const formSchema = z
   .object({
@@ -41,6 +42,7 @@ const formSchema = z
 export default function RegisterPage() {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const router = useRouter();
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -63,6 +65,7 @@ export default function RegisterPage() {
 
     if (result.success) {
       toast.success(result.message);
+      router.push("/login");
     } else {
       toast.error(result.message);
     }
