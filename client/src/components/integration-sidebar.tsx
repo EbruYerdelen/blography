@@ -28,12 +28,15 @@ import {
   Plus,
   CuboidIcon as Cube,
   X,
+  LogOut,
+  Loader2,
 } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useState } from "react";
 import { Input } from "./ui/input";
 import { ScrollArea } from "./ui/scroll-area";
+import { logout } from "@/app/actions/logout";
 
 interface Document {
   id: string;
@@ -46,6 +49,17 @@ interface Document {
 export function MinimalIntegrationSidebar({ documents = [] as Document[] }) {
   const [isCreatingDoc, setIsCreatingDoc] = useState(false);
   const [newDocName, setNewDocName] = useState("");
+  const [isLoggingOut, setIsLoggingOut] = useState(false);
+
+  const handleLogout = async () => {
+    setIsLoggingOut(true);
+    try {
+      await logout();
+    } catch (error) {
+      console.error("Logout failed:", error);
+      setIsLoggingOut(false);
+    }
+  };
   const pathname = usePathname();
 
   return (
@@ -210,6 +224,23 @@ export function MinimalIntegrationSidebar({ documents = [] as Document[] }) {
             </SidebarMenu>
           </SidebarGroup>
         </SidebarContent>
+        <SidebarGroup className="mt-auto pt-2 border-t border-border">
+          <SidebarMenu>
+            <SidebarMenuItem>
+              <SidebarMenuButton
+                tooltip="Logout"
+                className="flex group-data-[collapsible=icon]:justify-center items-center gap-2 hover:bg-accent px-2 py-1.5 w-full text-muted-foreground hover:text-foreground text-sm"
+                onClick={handleLogout}
+              >
+               {isLoggingOut ? <Loader2 className="w-4 h-4 animate-spin" /> : <LogOut className="w-4 h-4 shrink-0" />}
+                <span className="group-data-[collapsible=icon]:hidden truncate">
+                  Logout
+                </span>
+              </SidebarMenuButton>
+            </SidebarMenuItem>
+          </SidebarMenu>
+        </SidebarGroup>
+
         <SidebarRail />
       </Sidebar>
     </TooltipProvider>
