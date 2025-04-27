@@ -1,16 +1,14 @@
+import { MinimalIntegrationSidebar } from "@/components/integration-sidebar";
+import { SidebarProvider } from "@/components/ui/sidebar";
 import { ReactNode } from "react";
-import { Navigation } from "../../components/globals/Navigation";
 
-export default function BlogLayout({ children }: {
-  children:ReactNode
-}) {
+export default function BlogLayout({ children }: { children: ReactNode }) {
   return (
-    <div>
-      <header>
-        <Navigation />
-      </header>
-      <main>{children}</main>
-      <footer></footer>
-    </div>
+    <SidebarProvider defaultOpen={true}>
+      <div className="flex w-full h-screen">
+        <MinimalIntegrationSidebar documents={[]} />
+        <main className="flex-1 w-full overflow-auto">{children}</main>
+      </div>
+    </SidebarProvider>
   );
 }

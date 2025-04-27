@@ -1,5 +1,5 @@
 require("dotenv").config();
-const User = require("./user.model")
+const User = require("./user.model");
 const {
   findUserByEmail,
   createUser,
@@ -10,19 +10,19 @@ const {
   findUserByIdAndDelete,
 } = require("./auth.service");
 
-
-const registerUser = async (req,res) => {
+const registerUser = async (req, res) => {
   try {
-    const { username, email, password, role } = req.body
-    
+    const { username, email, password } = req.body;
+
     const existingUser = await User.findOne({
-      $or:[{username:username},{email:email}]
-    })
+      $or: [{ username: username }, { email: email }],
+    });
     if (existingUser) {
       res.status(400).json({
         success: false,
-        message:"User already exists,please try a different username or email."
-      })
+        message:
+          "User already exists,please try a different username or email.",
+      });
       return;
     }
 
@@ -30,34 +30,30 @@ const registerUser = async (req,res) => {
       username,
       email,
       password,
-      role: role || "user",
+      role: "user",
     });
-
 
     if (!newUser) {
       res.status(400).json({
         success: false,
-        message: "User register failed try again"
-      })
-      return
+        message: "User register failed try again",
+      });
+      return;
     }
 
     res.status(201).json({
       success: true,
       message: "User registered succesfully",
-      user:newUser
-    })
-
-
+      user: newUser,
+    });
   } catch (error) {
-    console.error(error)
+    console.error(error);
     res.status(500).json({
       success: false,
-      message:"Internal server error,please try again."
-    })
+      message: "Internal server error,please try again.",
+    });
   }
-}
-
+};
 
 const loginUser = async (req, res) => {
   try {
@@ -115,30 +111,30 @@ const loginUser = async (req, res) => {
       message: "Internal server error,please try again.",
     });
   }
-}
+};
 
 const logoutUser = async (req, res) => {
   try {
-      res.clearCookie("jwtToken", {
-        httpOnly: true,
-        secure: process.env.NODE_ENV === "production",
-        sameSite: "None",
-      });
-    
+    res.clearCookie("jwtToken", {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "None",
+    });
+
     res.status(200).json({
       success: true,
       message: "Logged out successfully",
     });
   } catch (error) {
-      console.error(error);
-      res.status(500).json({
-        success: false,
-        message: "Internal server error, please try again.",
-      });
+    console.error(error);
+    res.status(500).json({
+      success: false,
+      message: "Internal server error, please try again.",
+    });
   }
-}
+};
 
-const deleteUserAccount = async (req, res) => { 
+const deleteUserAccount = async (req, res) => {
   try {
     const userId = req.user.userId;
     const { password } = req.body;
@@ -146,17 +142,20 @@ const deleteUserAccount = async (req, res) => {
     if (!userToDelete) {
       res.status(404).json({
         success: false,
-        message:"User not found."
-      })
+        message: "User not found.",
+      });
       return;
     }
 
-    const isPasswordValid = await comparePassword(password, userToDelete.password);
+    const isPasswordValid = await comparePassword(
+      password,
+      userToDelete.password
+    );
     if (!isPasswordValid) {
       res.status(400).json({
         success: false,
-        message: "Invalid password."
-      })
+        message: "Invalid password.",
+      });
       return;
     }
 
@@ -164,29 +163,24 @@ const deleteUserAccount = async (req, res) => {
     if (!deletedUser) {
       res.status(400).json({
         success: false,
-        message:"Unable to delete user.Please try again"
-      })
+        message: "Unable to delete user.Please try again",
+      });
       return;
     }
-
 
     res.status(200).json({
       success: true,
       message: "User deleted succesfully",
-      deletedUser: deletedUser
-    })
-
-
+      deletedUser: deletedUser,
+    });
   } catch (error) {
-      console.error(error);
-      res.status(500).json({
-        success: false,
-        message: "Internal server error, please try again.",
-      });
+    console.error(error);
+    res.status(500).json({
+      success: false,
+      message: "Internal server error, please try again.",
+    });
   }
 };
-
-
 
 const updatePassword = async (req, res) => {
   try {
@@ -204,7 +198,10 @@ const updatePassword = async (req, res) => {
     }
 
     //check how we saved that user's password in database before.If it matches oldPass entered by client,then we allow client to update it.
-    const checkIfPassEnteredTrue = await comparePassword(oldPassword,currentUser.password)
+    const checkIfPassEnteredTrue = await comparePassword(
+      oldPassword,
+      currentUser.password
+    );
     if (!checkIfPassEnteredTrue) {
       res.status(400).json({
         success: false,
@@ -213,10 +210,8 @@ const updatePassword = async (req, res) => {
       return;
     }
 
-    
-
     const updatedUser = await updateUserPassword(currentUserId, newPassword);
-    
+
     if (!updatedUser) {
       return res.status(400).json({
         success: false,
@@ -229,20 +224,21 @@ const updatePassword = async (req, res) => {
       message: "Password updated successfully.",
     });
   } catch (error) {
-      console.error(error);
-      res.status(500).json({
-        success: false,
-        message: "Internal server error, please try again.",
-      });
+    console.error(error);
+    res.status(500).json({
+      success: false,
+      message: "Internal server error, please try again.",
+    });
   }
 };
 
-
-module.exports = { registerUser, loginUser, updatePassword,deleteUserAccount,logoutUser };
-
-
-
-
+module.exports = {
+  registerUser,
+  loginUser,
+  updatePassword,
+  deleteUserAccount,
+  logoutUser,
+};
 
 /*
 require("dotenv").config();
