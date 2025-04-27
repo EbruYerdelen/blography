@@ -20,12 +20,12 @@ const HomePage = async () => {
         </div>
 
         <div className="flex items-center gap-3">
-          <div className="flex flex-col gap-2 bg-[#262626] p-4 border border-[#404040] rounded-md w-[250px] cursor-pointer">
-            <FileSpreadsheet className="text-white" />
+          <div className="flex flex-col gap-2 bg-[#262626] p-4 border border-[#404040] rounded-md w-[160px] md:w-[280px] cursor-pointer">
+            <FileSpreadsheet className="max-md:size-4 text-white" />
             <p className="text-neutral-200 text-sm">New Document</p>
           </div>
-          <div className="flex flex-col gap-2 bg-[#262626] p-4 border border-[#404040] rounded-md w-[250px] cursor-pointer">
-            <Search className="text-white" />
+          <div className="flex flex-col gap-2 bg-[#262626] p-4 border border-[#404040] rounded-md w-[160px] md:w-[280px] cursor-pointer">
+            <Search className="max-md:size-4 text-white" />
             <p className="text-neutral-200 text-sm">Search</p>
           </div>
         </div>
