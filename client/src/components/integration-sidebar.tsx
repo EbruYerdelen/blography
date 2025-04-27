@@ -1,5 +1,6 @@
 "use client";
 
+import { logout } from "@/app/actions/logout";
 import {
   Collapsible,
   CollapsibleContent,
@@ -18,39 +19,53 @@ import {
 } from "@/components/ui/sidebar";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { cn } from "@/lib/utils";
+import { Document } from "@/services/document";
 import {
   Check,
   ChevronDown,
+  CuboidIcon as Cube,
   FileText,
   FolderOpen,
   LayoutGrid,
+  Loader2,
+  LogOut,
   PanelRight,
   Plus,
-  CuboidIcon as Cube,
   X,
-  LogOut,
-  Loader2,
 } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Input } from "./ui/input";
 import { ScrollArea } from "./ui/scroll-area";
-import { logout } from "@/app/actions/logout";
 
-interface Document {
-  id: string;
-  name: string;
-  content?: string;
-  createdAt?: string;
-  userId: string;
-}
-
-export function MinimalIntegrationSidebar({ documents = [] as Document[] }) {
+export function MinimalIntegrationSidebar() {
   const [isCreatingDoc, setIsCreatingDoc] = useState(false);
   const [newDocName, setNewDocName] = useState("");
   const [isLoggingOut, setIsLoggingOut] = useState(false);
+  const [documents, setDocuments] = useState<Document>();
+  const [isLoading, setIsLoading] = useState(true);
 
+  useEffect(() => {
+    const fetchDocuments = async () => {
+      try {
+        const response = await fetch("/api/documents", {
+          next: { tags: ["documents"] },
+        });
+
+        if (!response.ok) throw new Error("Failed to fetch");
+
+        const data = await response.json();
+        setDocuments(data);
+      } catch (error) {
+        console.error("Error fetching documents:", error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchDocuments();
+  }, []);
   const handleLogout = async () => {
     setIsLoggingOut(true);
     try {
@@ -60,6 +75,7 @@ export function MinimalIntegrationSidebar({ documents = [] as Document[] }) {
       setIsLoggingOut(false);
     }
   };
+
   const pathname = usePathname();
 
   return (
@@ -194,28 +210,35 @@ export function MinimalIntegrationSidebar({ documents = [] as Document[] }) {
                             </SidebarMenuButton>
                           )}
                         </div>
-                        {documents.map((doc) => (
-                          <div
-                            key={doc.id}
-                            className="ml-4 group-data-[collapsible=icon]:ml-0 px-2 group-data-[collapsible=icon]:px-0 border-border border-l border-dashed"
-                          >
-                            <SidebarMenuButton
-                              asChild
-                              tooltip={doc.name}
-                              data-active={
-                                pathname.split("/").at(-1) === doc.id
-                              }
-                              className="flex group-data-[collapsible=icon]:justify-center items-center gap-2 hover:bg-accent px-2 py-1.5 rounded-lg w-full text-muted-foreground text-sm hover:text-accent-foreground"
-                            >
-                              <Link href={`/docs/${doc.id}`}>
-                                <FileText className="w-4 h-4 shrink-0" />
-                                <span className="group-data-[collapsible=icon]:hidden truncate">
-                                  {doc.name}
-                                </span>
-                              </Link>
-                            </SidebarMenuButton>
+                        {isLoading ? (
+                          <div className="flex justify-center ml-4 group-data-[collapsible=icon]:ml-0 px-2 group-data-[collapsible=icon]:px-0 py-2 border-border border-l border-dashed">
+                            <Loader2 className="w-4 h-4 animate-spin" />
                           </div>
-                        ))}
+                        ) : (
+                          Array.isArray(documents?.data) &&
+                          documents?.data?.map((doc) => (
+                            <div
+                              key={doc._id}
+                              className="ml-4 group-data-[collapsible=icon]:ml-0 px-2 group-data-[collapsible=icon]:px-0 border-border border-l border-dashed"
+                            >
+                              <SidebarMenuButton
+                                asChild
+                                tooltip={doc.title}
+                                data-active={
+                                  pathname.split("/").at(-1) === doc._id
+                                }
+                                className="flex group-data-[collapsible=icon]:justify-center items-center gap-2 hover:bg-accent px-2 py-1.5 rounded-lg w-full text-muted-foreground text-sm hover:text-accent-foreground"
+                              >
+                                <Link href={`/docs/${doc._id}`}>
+                                  <FileText className="w-4 h-4 shrink-0" />
+                                  <span className="group-data-[collapsible=icon]:hidden truncate">
+                                    {doc.title}
+                                  </span>
+                                </Link>
+                              </SidebarMenuButton>
+                            </div>
+                          ))
+                        )}
                       </div>
                     </ScrollArea>
                   </CollapsibleContent>
@@ -232,7 +255,11 @@ export function MinimalIntegrationSidebar({ documents = [] as Document[] }) {
                 className="flex group-data-[collapsible=icon]:justify-center items-center gap-2 hover:bg-accent px-2 py-1.5 w-full text-muted-foreground hover:text-foreground text-sm"
                 onClick={handleLogout}
               >
-               {isLoggingOut ? <Loader2 className="w-4 h-4 animate-spin" /> : <LogOut className="w-4 h-4 shrink-0" />}
+                {isLoggingOut ? (
+                  <Loader2 className="w-4 h-4 animate-spin" />
+                ) : (
+                  <LogOut className="w-4 h-4 shrink-0" />
+                )}
                 <span className="group-data-[collapsible=icon]:hidden truncate">
                   Logout
                 </span>
