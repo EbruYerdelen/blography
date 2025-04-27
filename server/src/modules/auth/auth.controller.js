@@ -10,47 +10,55 @@ const {
   findUserByIdAndDelete,
 } = require("./auth.service");
 
+const bcrypt = require("bcryptjs");
+
 const registerUser = async (req, res) => {
   try {
     const { username, email, password } = req.body;
 
+    if (!username || !email || !password) {
+      return res.status(400).json({
+        success: false,
+        message: "Please provide all required fields",
+      });
+    }
     const existingUser = await User.findOne({
       $or: [{ username: username }, { email: email }],
     });
+
     if (existingUser) {
-      res.status(400).json({
+      return res.status(400).json({
         success: false,
         message:
-          "User already exists,please try a different username or email.",
+          "User already exists, Please try a different username or email.",
       });
-      return;
     }
 
-    const newUser = await createUser({
+    const salt = await bcrypt.genSalt(10);
+    const hashedPassword = await bcrypt.hash(password, salt);
+
+    const newUser = new User({
       username,
       email,
-      password,
+      password: hashedPassword,
       role: "user",
     });
 
-    if (!newUser) {
-      res.status(400).json({
-        success: false,
-        message: "User register failed try again",
-      });
-      return;
-    }
+    await newUser.save();
+
+    const userToReturn = { ...newUser._doc };
+    delete userToReturn.password;
 
     res.status(201).json({
       success: true,
-      message: "User registered succesfully",
-      user: newUser,
+      message: "User registered successfully",
+      user: userToReturn,
     });
   } catch (error) {
     console.error(error);
     res.status(500).json({
       success: false,
-      message: "Internal server error,please try again.",
+      message: "Internal server error, please try again.",
     });
   }
 };

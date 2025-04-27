@@ -17,6 +17,8 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
+import { toast } from "sonner";
+import { registerUser } from "@/app/actions/register";
 
 const formSchema = z
   .object({
@@ -50,13 +52,20 @@ export default function RegisterPage() {
     },
   });
 
-  function onSubmit(values: z.infer<typeof formSchema>) {
-    // Log the form values as requested
-    console.log({
+  async function onSubmit(values: z.infer<typeof formSchema>) {
+    const userData = {
       username: values.username,
       email: values.email,
       password: values.password,
-    });
+    };
+
+    const result = await registerUser(userData);
+
+    if (result.success) {
+      toast.success(result.message);
+    } else {
+      toast.error(result.message);
+    }
   }
 
   return (
