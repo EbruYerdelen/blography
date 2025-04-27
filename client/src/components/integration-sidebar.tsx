@@ -38,6 +38,7 @@ import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 import { Input } from "./ui/input";
 import { ScrollArea } from "./ui/scroll-area";
+import { toast } from "sonner";
 
 export function MinimalIntegrationSidebar() {
   const [isCreatingDoc, setIsCreatingDoc] = useState(false);
@@ -45,6 +46,7 @@ export function MinimalIntegrationSidebar() {
   const [isLoggingOut, setIsLoggingOut] = useState(false);
   const [documents, setDocuments] = useState<Document>();
   const [isLoading, setIsLoading] = useState(true);
+  const [isCreating, setIsCreating] = useState(false);
 
   useEffect(() => {
     const fetchDocuments = async () => {
@@ -59,6 +61,7 @@ export function MinimalIntegrationSidebar() {
         setDocuments(data);
       } catch (error) {
         console.error("Error fetching documents:", error);
+        toast.error("Failed to fetch documents");
       } finally {
         setIsLoading(false);
       }
@@ -66,6 +69,68 @@ export function MinimalIntegrationSidebar() {
 
     fetchDocuments();
   }, []);
+
+  const handleCreateDocument = async () => {
+    if (!newDocName.trim()) return;
+
+    setIsCreating(true);
+    const tempId = Date.now().toString(); // For optimistic update
+
+    // Optimistic update
+    setDocuments((prev) => ({
+      ...prev,
+      data: [
+        ...(prev?.data || []),
+        {
+          _id: tempId,
+          title: newDocName,
+          createdAt: new Date().toISOString(),
+          updatedAt: new Date().toISOString(),
+          userId: "placeholder-user-id", // Add a placeholder userId
+        },
+      ],
+    }));
+
+    try {
+      const response = await fetch("/api/documents", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ title: newDocName }),
+      });
+
+      if (!response.ok) throw new Error("Failed to create document");
+
+      const newDocument = await response.json();
+      console.log("New document created:", newDocument);
+
+      // Update the documents list with the actual data from server
+      setDocuments((prev) => ({
+        ...prev,
+        data: (prev?.data || []).map((doc) =>
+          doc._id === tempId ? newDocument?.data : doc
+        ),
+      }));
+
+      toast.success("Document created successfully");
+    } catch (error) {
+      console.error("Error creating document:", error);
+
+      // Rollback optimistic update
+      setDocuments((prev) => ({
+        ...prev,
+        data: (prev?.data || []).filter((doc) => doc._id !== tempId),
+      }));
+
+      toast.error("Failed to create document");
+    } finally {
+      setIsCreating(false);
+      setIsCreatingDoc(false);
+      setNewDocName("");
+    }
+  };
+
   const handleLogout = async () => {
     setIsLoggingOut(true);
     try {
@@ -155,7 +220,13 @@ export function MinimalIntegrationSidebar() {
                       <div className="space-y-1">
                         <div className="top-0 sticky ml-4 group-data-[collapsible=icon]:ml-0 px-2 group-data-[collapsible=icon]:px-0 border-border border-l border-dashed">
                           {isCreatingDoc ? (
-                            <form className="group-data-[collapsible=icon]:hidden flex items-center gap-1">
+                            <form
+                              className="group-data-[collapsible=icon]:hidden flex items-center gap-1"
+                              onSubmit={(e) => {
+                                e.preventDefault();
+                                handleCreateDocument();
+                              }}
+                            >
                               <Input
                                 name="name"
                                 placeholder="Document name"
@@ -176,9 +247,14 @@ export function MinimalIntegrationSidebar() {
                                   size="sm"
                                   tooltip="Create document"
                                   className="w-8 h-8"
-                                  disabled={!newDocName.trim()}
+                                  disabled={!newDocName.trim() || isCreating}
+                                  type="submit"
                                 >
-                                  <Check className="w-4 h-4" />
+                                  {isCreating ? (
+                                    <Loader2 className="w-4 h-4 animate-spin" />
+                                  ) : (
+                                    <Check className="w-4 h-4" />
+                                  )}
                                 </SidebarMenuButton>
                                 <SidebarMenuButton
                                   type="button"
@@ -189,6 +265,7 @@ export function MinimalIntegrationSidebar() {
                                     setIsCreatingDoc(false);
                                     setNewDocName("");
                                   }}
+                                  disabled={isCreating}
                                 >
                                   <X className="w-4 h-4" />
                                 </SidebarMenuButton>
@@ -202,6 +279,7 @@ export function MinimalIntegrationSidebar() {
                               className="flex justify-start group-data-[collapsible=icon]:justify-center items-center gap-2 bg-background dark:bg-muted group-data-[collapsible=icon]:pr-0 pl-2 group-data-[collapsible=icon]:pl-0 border border-border w-full h-8 group-data-[collapsible=icon]:size-8 text-sm"
                               onClick={() => setIsCreatingDoc(true)}
                               data-new-doc-trigger
+                              disabled={isCreatingDoc || isCreating}
                             >
                               <Plus className="w-4 h-4 shrink-0" />
                               <span className="group-data-[collapsible=icon]:hidden">
