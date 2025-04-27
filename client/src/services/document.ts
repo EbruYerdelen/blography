@@ -9,7 +9,7 @@ export interface Document {
 }
 
 export async function fetchDocuments() {
-  const response = await fetch("/api/documents", {
+  const response = await fetch("http://localhost:3000/api/documents", {
     next: { tags: ["documents"] },
   });
 

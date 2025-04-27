@@ -1,6 +1,6 @@
 import { cookies } from "next/headers";
 import { NextResponse } from "next/server";
-import { revalidateTag } from "next/cache";
+import { revalidatePath, revalidateTag } from "next/cache";
 
 export async function POST(request: Request) {
   try {
@@ -31,6 +31,7 @@ export async function POST(request: Request) {
 
     const newDocument = await response.json();
     revalidateTag("documents");
+    revalidatePath("/home");
 
     return NextResponse.json(newDocument);
   } catch (error) {
