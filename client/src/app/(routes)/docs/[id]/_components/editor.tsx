@@ -90,23 +90,27 @@ const Editor = ({ id }: { id: string }) => {
   }
 
   return (
-    <div className="p-4">
+    <div className="pt-2 px-4 pb-4">
+      <div className="flex sm:flex-row sm:justify-between sm:items-center mb-4 flex-col gap-2">
+        <p className="text-neutral-400 text-sm pl-[69px]">
+          Updated at: 27/04/2025
+        </p>
+        <button
+          onClick={handleSave}
+          disabled={isSaving}
+          className="sm:bg-[rgb(7,7,7)] bg-[rgb(14,14,14)] hover:bg-[rgb(36,36,36)] active:bg-[rgb(50,50,50)] disabled:bg-[rgb(60,60,60)] px-4 py-2 rounded-md text-white transition-all duration-200 disabled:cursor-not-allowed w-36 sm:w-auto sm:ml-0 ml-[69px] shadow-md hover:shadow-lg active:shadow-sm"
+        >
+          {isSaving ? "Saving..." : "Save Changes"}
+        </button>
+      </div>
       <BlockNoteView
         editor={editor}
         className="editor-container"
         theme="dark"
       />
-      <div className="flex justify-between items-center mt-4">
-        <button
-          onClick={handleSave}
-          disabled={isSaving}
-          className="bg-blue-600 hover:bg-blue-700 disabled:bg-blue-400 px-4 py-2 rounded text-white transition-colors disabled:cursor-not-allowed"
-        >
-          {isSaving ? "Saving..." : "Save Changes"}
-        </button>
-      </div>
     </div>
   );
 };
 
 export default Editor;
+

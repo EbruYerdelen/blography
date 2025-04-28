@@ -21,7 +21,6 @@ const Docs = async ({ params }: Props) => {
       />
       <div className="flex flex-col gap-1 pl-[69px]">
         <h1 className="font-semibold text-white text-3xl">New Document</h1>
-        <p className="text-neutral-400 text-sm">Updated at: 27/04/2025</p>
       </div>
       <EditorWrapper id={id} doc={document} />
     </div>
