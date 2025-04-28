@@ -1,7 +1,16 @@
 import Image from "next/image";
 import EditorWrapper from "./_components/editor-wrapper";
+import { getDocumentById } from "@/services/server-document";
 
-const Docs = () => {
+type Props = {
+  params: Promise<{ id: string }>;
+};
+
+const Docs = async ({ params }: Props) => {
+  const { id } = await params;
+  const document = await getDocumentById(id);
+  console.log("Document data:", document);
+
   return (
     <div className="relative py-6">
       <Image

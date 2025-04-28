@@ -81,6 +81,26 @@ class PostController {
       });
     }
   }
+  static async getPostById(req, res) {
+    try {
+      const { id } = req.params;
+
+      const post = await PostService.getPostsById(id);
+      if (!post) {
+        return res.status(404).json({
+          success: false,
+          message: "Post not found",
+        });
+      }
+
+      res.status(200).json({ success: true, data: post });
+    } catch (error) {
+      res.status(500).json({
+        success: false,
+        message: error.message,
+      });
+    }
+  }
 }
 
 module.exports = PostController;
