@@ -1,35 +1,37 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 "use client";
 
 import "@blocknote/core/fonts/inter.css";
 import { BlockNoteView } from "@blocknote/mantine";
-import { Block } from "@blocknote/core";
 import "@blocknote/mantine/style.css";
 import { useCreateBlockNote } from "@blocknote/react";
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useState } from "react";
 import { EditorSkeleton } from "./editor-skeleton";
 
-const Editor = ({
-  onChange,
-  doc,
-  id, // Added id prop
-}: {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  onChange: (content: any) => void;
-  doc: {
-    title: string;
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    content: any;
-    updatedAt: string;
-  };
-  id: string; // Document identifier
-}) => {
+const Editor = ({ id }: { id: string }) => {
   const [isMounted, setIsMounted] = useState(false);
-  const [blocks, setBlocks] = useState<Block[]>([]);
-  const [timeoutId, setTimeoutId] = useState<NodeJS.Timeout | null>(null);
   const [isSaving, setIsSaving] = useState(false);
 
-  // Get saved content from localStorage
+  const getBlogData = async (id: string) => {
+    try {
+      const res = await fetch(`http://localhost:3001/post/my/${id}`, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+      if (res) {
+        const data = await res.json();
+        if (data.data.content) {
+          return JSON.parse(data.data.content);
+        }
+      }
+      return null;
+    } catch (error) {
+      console.error("Error fetching blog data:", error);
+      return null;
+    }
+  };
+
   const getSavedContent = () => {
     if (typeof window !== "undefined") {
       const savedData = localStorage.getItem(`editor-content-${id}`);
@@ -37,8 +39,6 @@ const Editor = ({
     }
     return null;
   };
-
-  // Initial content with fallback to default content
   const initialContent = getSavedContent() || [
     {
       type: "paragraph",
@@ -47,48 +47,32 @@ const Editor = ({
     {
       type: "paragraph",
     },
-    {
-      type: "heading",
-      content: "Start writing here...",
-      props: { level: 1 },
-    },
-    {
-      type: "paragraph",
-      content: "This is a custom editor with a clean, modern theme.",
-    },
   ];
 
   const editor = useCreateBlockNote({
     initialContent: initialContent,
   });
 
-  const debouncedOnChange = useCallback(
-    (content: Block[]) => {
-      setBlocks(content);
-      if (timeoutId) {
-        clearTimeout(timeoutId);
-      }
-
-      const newTimeoutId = setTimeout(() => {
-        onChange(content);
-      }, 1000);
-
-      setTimeoutId(newTimeoutId);
-    },
-    [onChange, timeoutId]
-  );
-
-  const handleSave = () => {
+  const handleSave = async () => {
     setIsSaving(true);
     try {
       const contentToSave = editor.document;
-      localStorage.setItem(
-        `editor-content-${id}`,
-        JSON.stringify(contentToSave)
-      );
-      console.log("Content saved to localStorage:", contentToSave);
-      // Also update the last saved timestamp
-      localStorage.setItem(`editor-last-saved-${id}`, new Date().toISOString());
+      await fetch(`http://localhost:3001/post/post/${id}`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          content: JSON.stringify(contentToSave),
+        }),
+      });
+      // localStorage.setItem(
+      //   `editor-content-${id}`,
+      //   JSON.stringify(contentToSave)
+      // );
+      // console.log("Content saved to localStorage:", contentToSave);
+      // // Also update the last saved timestamp
+      // localStorage.setItem(`editor-last-saved-${id}`, new Date().toISOString());
     } catch (error) {
       console.error("Failed to save content:", error);
     } finally {
@@ -97,20 +81,15 @@ const Editor = ({
   };
 
   useEffect(() => {
-    return () => {
-      if (timeoutId) {
-        clearTimeout(timeoutId);
+    setIsMounted(true);
+    const loadData = async () => {
+      const blogData = await getBlogData(id);
+      if (blogData) {
+        editor.replaceBlocks(editor.document, blogData);
       }
     };
-  }, [timeoutId]);
-
-  useEffect(() => {
-    setIsMounted(true);
     // Load saved content when component mounts
-    const savedContent = getSavedContent();
-    if (savedContent) {
-      editor.replaceBlocks(editor.document, savedContent);
-    }
+    loadData();
   }, []);
 
   if (!isMounted) {
@@ -122,9 +101,6 @@ const Editor = ({
       <BlockNoteView
         editor={editor}
         className="editor-container"
-        onChange={() => {
-          debouncedOnChange(editor.document);
-        }}
         theme="dark"
       />
       <div className="flex justify-between items-center mt-4">
@@ -135,12 +111,6 @@ const Editor = ({
         >
           {isSaving ? "Saving..." : "Save Changes"}
         </button>
-        <span className="text-gray-400 text-sm">
-          Last saved:{" "}
-          {new Date(
-            localStorage.getItem(`editor-last-saved-${id}`) || ""
-          ).toLocaleString() || "Never"}
-        </span>
       </div>
     </div>
   );

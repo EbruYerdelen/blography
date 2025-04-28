@@ -17,13 +17,8 @@ type Props = {
   };
 };
 
-const EditorWrapper = ({ id, doc }: Props) => {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const handleContentChange = (content: any) => {
-    console.log("Debounced content:", content, id);
-  };
-
-  return <Editor onChange={handleContentChange} doc={doc} id={id} />;
+const EditorWrapper = ({ id }: Props) => {
+  return <Editor id={id} />;
 };
 
 export default EditorWrapper;
