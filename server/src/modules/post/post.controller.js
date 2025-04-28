@@ -3,11 +3,16 @@ const PostService = require("./post.service");
 class PostController {
   static async createPost(req, res) {
     try {
-      const { title, content } = req.body;
+      const { title } = req.body;
       const postData = {
         title,
-        content: content || null,
         user: req.user.userId,
+        content: [
+          {
+            type: "paragraph",
+            content: "Welcome to this Editor!",
+          },
+        ],
       };
 
       const post = await PostService.createPost(postData);

@@ -35,8 +35,8 @@ export async function getDocumentById(id: string) {
         "Content-Type": "application/json",
       },
       next: {
-        tags: ["documents", id],
-        revalidate: 60,
+        tags: [`documents:${id}`],
+        revalidate: 30,
       },
     });
     const res = await response.json();
