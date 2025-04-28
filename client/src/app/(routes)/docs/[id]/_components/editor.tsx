@@ -6,6 +6,7 @@ import "@blocknote/mantine/style.css";
 import { useCreateBlockNote } from "@blocknote/react";
 import { useEffect, useState } from "react";
 import { EditorSkeleton } from "./editor-skeleton";
+import axios from "axios";
 
 const Editor = ({ id }: { id: string }) => {
   const [isMounted, setIsMounted] = useState(false);
@@ -13,20 +14,17 @@ const Editor = ({ id }: { id: string }) => {
 
   const getBlogData = async (id: string) => {
     try {
-      const res = await fetch(`/api/post/${id}`, {
-        method: "GET",
+      const res = await axios.get(`/api/post/${id}`, {
         headers: {
           "Content-Type": "application/json",
         },
       });
-      if (res) {
-        const data = await res.json();
-        if (data.data.content) {
-          return JSON.parse(data.data.content);
-        }
+        if (res.data.data.content) {
+          return JSON.parse(res.data.data.content);
       }
       return null;
-    } catch (error) {
+      }
+      catch (error) {
       console.error("Error fetching blog data:", error);
       return null;
     }
@@ -57,14 +55,12 @@ const Editor = ({ id }: { id: string }) => {
     setIsSaving(true);
     try {
       const contentToSave = editor.document;
-      await fetch(`http://localhost:3001/post/post/${id}`, {
-        method: "PUT",
+      await axios.put(`http://localhost:3001/post/post/${id}`, {
+        content: JSON.stringify(contentToSave),
+      }, {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({
-          content: JSON.stringify(contentToSave),
-        }),
       });
     } catch (error) {
       console.error("Failed to save content:", error);
@@ -110,3 +106,4 @@ const Editor = ({ id }: { id: string }) => {
 };
 
 export default Editor;
+

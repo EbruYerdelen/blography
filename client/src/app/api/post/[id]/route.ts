@@ -4,7 +4,7 @@ import { cookies } from "next/headers";
 import { NextResponse } from "next/server";
 
 export async function GET(req: Request, { params }: any) {
-  const { id } = params;
+  const { id } = await params;
   try {
     const cookieStore = cookies();
     const token = (await cookieStore).get("token")?.value;
