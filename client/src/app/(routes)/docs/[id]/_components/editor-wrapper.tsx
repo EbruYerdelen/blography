@@ -2,7 +2,7 @@
 import dynamic from "next/dynamic";
 import { EditorSkeleton } from "./editor-skeleton";
 
-const Editor = dynamic(() => import("./editor").then((mod) => mod.Editor), {
+const Editor = dynamic(() => import("./editor"), {
   ssr: false,
   loading: () => <EditorSkeleton />,
 });

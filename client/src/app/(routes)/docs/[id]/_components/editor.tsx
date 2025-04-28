@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 "use client";
 
 import "@blocknote/core/fonts/inter.css";
@@ -8,7 +9,7 @@ import { useCreateBlockNote } from "@blocknote/react";
 import { useEffect, useState, useCallback } from "react";
 import { EditorSkeleton } from "./editor-skeleton";
 
-export const Editor = ({
+const Editor = ({
   onChange,
   doc,
 }: {
@@ -92,3 +93,5 @@ export const Editor = ({
     </div>
   );
 };
+
+export default Editor
