@@ -21,7 +21,6 @@ const Editor = ({ id }: { id: string }) => {
       });
       if (res) {
         const data = await res.json();
-        console.log("Fetched blog data:", data);
         if (data.data.content) {
           return JSON.parse(data.data.content);
         }

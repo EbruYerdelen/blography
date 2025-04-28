@@ -21,9 +21,10 @@ export async function GET(req: Request, { params }: any) {
       headers: {
         Authorization: `Bearer ${token}`,
         "Content-Type": "application/json",
+        cache: "no-store",
       },
       next: {
-        tags: ["documents"],
+        tags: [`documents:${id}`],
         revalidate: 0,
       },
     });
@@ -64,6 +65,7 @@ export async function PUT(request: Request, { params }: any) {
       headers: {
         Authorization: `Bearer ${token}`,
         "Content-Type": "application/json",
+        cache: "no-store",
       },
       body: content
     });
@@ -73,7 +75,7 @@ export async function PUT(request: Request, { params }: any) {
     }
 
     const newDocument = await response.json();
-    revalidateTag("documents");
+    revalidateTag(`documents:${id}`);
 
     return NextResponse.json(newDocument);
   } catch (error) {
