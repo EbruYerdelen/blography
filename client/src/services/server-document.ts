@@ -13,7 +13,7 @@ export async function getDocuments() {
       },
       next: {
         tags: ["documents"],
-        revalidate: 60,
+        revalidate: 0,
       },
     });
     const res = await response.json();
@@ -33,10 +33,11 @@ export async function getDocumentById(id: string) {
       headers: {
         Authorization: `Bearer ${token}`,
         "Content-Type": "application/json",
+        cache: "no-store",
       },
       next: {
         tags: [`documents:${id}`],
-        revalidate: 30,
+        revalidate: 0,
       },
     });
     const res = await response.json();

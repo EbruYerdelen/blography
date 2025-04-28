@@ -13,7 +13,7 @@ const Editor = ({ id }: { id: string }) => {
 
   const getBlogData = async (id: string) => {
     try {
-      const res = await fetch(`http://localhost:3001/post/my/${id}`, {
+      const res = await fetch(`/api/post/${id}`, {
         method: "GET",
         headers: {
           "Content-Type": "application/json",
@@ -21,6 +21,7 @@ const Editor = ({ id }: { id: string }) => {
       });
       if (res) {
         const data = await res.json();
+        console.log("Fetched blog data:", data);
         if (data.data.content) {
           return JSON.parse(data.data.content);
         }
@@ -66,13 +67,6 @@ const Editor = ({ id }: { id: string }) => {
           content: JSON.stringify(contentToSave),
         }),
       });
-      // localStorage.setItem(
-      //   `editor-content-${id}`,
-      //   JSON.stringify(contentToSave)
-      // );
-      // console.log("Content saved to localStorage:", contentToSave);
-      // // Also update the last saved timestamp
-      // localStorage.setItem(`editor-last-saved-${id}`, new Date().toISOString());
     } catch (error) {
       console.error("Failed to save content:", error);
     } finally {

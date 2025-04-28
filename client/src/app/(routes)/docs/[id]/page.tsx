@@ -9,7 +9,6 @@ type Props = {
 const Docs = async ({ params }: Props) => {
   const { id } = await params;
   const document = await getDocumentById(id);
-  console.log("Document data:", document);
 
   return (
     <div className="relative py-6">
