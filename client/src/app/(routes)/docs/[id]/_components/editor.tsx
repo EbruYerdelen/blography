@@ -4,18 +4,16 @@ import "@blocknote/core/fonts/inter.css";
 import { BlockNoteView } from "@blocknote/mantine";
 import { useCreateBlockNote } from "@blocknote/react";
 import "@blocknote/mantine/style.css";
-import { useDebounce } from "use-debounce";
 import { useEffect, useState, useCallback } from "react";
 import { EditorSkeleton } from "./editor-skeleton";
 
 export const Editor = ({
-  onDebouncedChange,
+  onChange,
 }: {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  onDebouncedChange?: (content: any) => void;
+  onChange?: (content: any) => void;
 }) => {
   const [isMounted, setIsMounted] = useState(false);
-  const [hasUserTyped, setHasUserTyped] = useState(false);
 
   const editor = useCreateBlockNote({
     initialContent: [
@@ -38,39 +36,27 @@ export const Editor = ({
     ],
   });
 
-  const [debouncedContent] = useDebounce(
-    isMounted ? editor.document : null,
-    1000
-  );
-
-  const handleEditorUpdate = useCallback(() => {
-    if (isMounted) {
-      setHasUserTyped(true);
+  const handleEditorBlur = useCallback(() => {
+    if (isMounted && onChange) {
+      onChange(editor.document);
     }
-  }, [isMounted]);
+  }, [isMounted, onChange, editor]);
 
   useEffect(() => {
     setIsMounted(true);
-    return () => {
-    };
+    return () => {};
   }, []);
 
   useEffect(() => {
     if (!isMounted) return;
 
     const editorInstance = editor._tiptapEditor;
-    editorInstance.on("update", handleEditorUpdate);
+    editorInstance.on("blur", handleEditorBlur);
 
     return () => {
-      editorInstance.off("update", handleEditorUpdate);
+      editorInstance.off("blur", handleEditorBlur);
     };
-  }, [editor, handleEditorUpdate, isMounted]);
-
-  useEffect(() => {
-    if (isMounted && hasUserTyped && onDebouncedChange && debouncedContent) {
-      onDebouncedChange(debouncedContent);
-    }
-  }, [debouncedContent, onDebouncedChange, hasUserTyped, isMounted]);
+  }, [editor, handleEditorBlur, isMounted]);
 
   if (!isMounted) {
     return <EditorSkeleton />;
@@ -81,6 +67,7 @@ export const Editor = ({
       <BlockNoteView
         editor={editor}
         className="editor-container"
+        onBlur={handleEditorBlur}
         theme="dark"
       />
     </div>

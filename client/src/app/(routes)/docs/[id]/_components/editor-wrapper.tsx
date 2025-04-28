@@ -1,7 +1,7 @@
 "use client";
-
 import dynamic from "next/dynamic";
 import { EditorSkeleton } from "./editor-skeleton";
+
 const Editor = dynamic(() => import("./editor").then((mod) => mod.Editor), {
   ssr: false,
   loading: () => <EditorSkeleton />,
@@ -12,7 +12,8 @@ const EditorWrapper = () => {
   const handleContentChange = (content: any) => {
     console.log("Debounced content:", content);
   };
-  return <Editor onDebouncedChange={handleContentChange} />;
+
+  return <Editor onChange={handleContentChange} />;
 };
 
 export default EditorWrapper;
