@@ -4,3 +4,8 @@ declare interface LandingPageBlogData {
   description: string;
   date: string;
 }
+
+declare interface LandingGridProps {
+  title: string;
+  description: string;
+}

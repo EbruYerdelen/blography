@@ -301,3 +301,25 @@ body {
   background: transparent !important;
 }
 
+.rotateImgEffectParent {
+  transform-style: preserve-3d;
+  perspective: 4000px;
+  perspective-origin: 0% 0;
+}
+
+.rotateImgEffect {
+  backface-visibility: hidden;
+  transform: rotateX(46deg) rotateY(-34deg) rotateZ(-315deg) scale(1.1) translateX(-2%);
+}
+
+
+.rotateImgEffectReverse {
+  backface-visibility: hidden;
+  transform: rotateX(49deg) rotateY(34deg) rotateZ(328deg) scale(1.1) translateX(2%);
+}
+
+.text-shadow-hover {
+  transition: text-shadow 0.3s ease-in-out;
+  text-shadow: 0px 0px 5px rgba(85, 85, 85, 0.692); 
+}
+

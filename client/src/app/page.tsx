@@ -11,7 +11,9 @@ import {
   CarouselNext,
   CarouselPrevious,
 } from "@/components/ui/Carousel";
-import { landingPageBlogPosts } from "@/data/landing-data";
+import { landingPageBlogGrid, landingPageBlogPosts } from "@/data/landing-data";
+import Image from "next/image";
+import { useRouter } from "next/navigation";
 
 
 const containerVariants = {
@@ -38,9 +40,8 @@ const itemVariants = {
 };
 
 const slideVariants = {
-  hidden: { opacity: 0, x: -80 },
+  hidden: {x: -80, backgroundColor: "black" },
   visible: {
-    opacity: 1,
     x: 0,
     transition: {
       duration: 0.7,
@@ -51,10 +52,25 @@ const slideVariants = {
   },
 };
 
+const gridVariants = {
+  hidden: {
+    opacity: 0,
+  },
+  visible: (custom:number) => ({
+    opacity: 1,
+    transition: {
+      duration: 0.7,
+      ease: "easeInOut",
+      delay: custom * 0.1, 
+    },
+  }),
+};
+
 export default function LandingPage() {
+  const router = useRouter();
   const mainRef = useRef(null);
   const isInView = useInView(mainRef, {
-    margin: "0px 0px -5% 0px",
+    margin: "0px 0px -50px 0px",
     once: true,
   });
 
@@ -62,15 +78,16 @@ export default function LandingPage() {
       animate: isInView ? "visible": "hidden",
       initial: "hidden",
     };
+      const whileViewProps = {
+        whileInView: isInView ? "visible" : "hidden",
+        initial: "hidden",
+      };
   
   
   
   return (
-    <div className="h-screen">
-      <div
-        ref={mainRef}
-        className="h-full bg-gradient-to-b from-[rgb(20,20,20)] to-black flex justify-center items-center"
-      >
+    <div ref={mainRef} className="h-screen">
+      <div className="h-full bg-gradient-to-b from-[rgb(20,20,20)] to-black flex justify-center items-center">
         <motion.div
           className="flex flex-col space-y-20 w-[90%] h-[75%] bg-gradient-to-br from-[rgba(209,209,209,0.03)] to-[rgba(245,245,245,0.14)]  rounded-sm shadow-lg relative z-0 overflow-hidden"
           variants={containerVariants}
@@ -86,7 +103,7 @@ export default function LandingPage() {
             >
               <Globe size={32} color="#FFFFFF" />
               <motion.h1 className="text-xl text-white" variants={itemVariants}>
-                Blography
+                <Link href="/">Blography</Link>
               </motion.h1>
             </motion.div>
             <Link
@@ -113,6 +130,7 @@ export default function LandingPage() {
               variants={itemVariants}
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
+              onClick={() => router.push("/login")}
             >
               Get Started
             </motion.button>
@@ -128,26 +146,30 @@ export default function LandingPage() {
         </motion.div>
       </div>
 
-      <motion.div
-        variants={slideVariants}
-        initial="hidden"
-        animate="visible"
-        className="p-10 pt-48 w-full flex flex-col justify-center items-center gap-y-1"
-      >
-        <motion.h1 className="text-6xl">Where words meet the world</motion.h1>
-        <motion.p className="text-3xl text-gray-400">
-          {" "}
+      <motion.div className="p-10 pt-48 w-full flex flex-col justify-center items-center gap-y-1 !bg-black">
+        <motion.h1
+          variants={gridVariants}
+          {...whileViewProps}
+          custom={0}
+          className="text-6xl"
+        >
+          Where words meet the world
+        </motion.h1>
+        <motion.p
+          variants={gridVariants}
+          {...whileViewProps}
+          custom={1}
+          className="text-3xl text-gray-400"
+        >
           Write your journey, map your mind
         </motion.p>
       </motion.div>
 
-
-
-      <section className="max-w-4xl mx-auto py-12 px-4">
+      <section className=" mx-auto py-12 px-4 !bg-black ">
         <motion.h2
-          variants={slideVariants}
-          initial="hidden"
-          animate="visible"
+          variants={gridVariants}
+          {...whileViewProps}
+          custom={2}
           className="text-2xl text-center mb-8 text-gray-400"
         >
           No limits to your creativity
@@ -164,7 +186,7 @@ export default function LandingPage() {
             {landingPageBlogPosts.map((post) => (
               <CarouselItem key={post.id} className="md:basis-1/2 lg:basis-1/3">
                 <div className="p-2 h-full">
-                  <article className="bg-[rgb(20,20,20)] border border-white rounded-xl p-6 h-full flex flex-col hover:border-gray-600 transition-colors">
+                  <article className="bg-[rgb(20,20,20)] border border-white rounded-md p-6 h-full flex flex-col hover:border-gray-600 transition-colors">
                     <div className="flex items-center mb-3">
                       <span className="flex h-3 w-3 relative mr-2">
                         <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-gray-400 opacity-75"></span>
@@ -190,14 +212,73 @@ export default function LandingPage() {
               </CarouselItem>
             ))}
           </CarouselContent>
-          <CarouselPrevious className="left-1 bg-[rgb(20,20,20)] hover:bg-[rgb(36,36,36)] border-gray-700" />
-          <CarouselNext className="right-1 bg-[rgb(20,20,20)] hover:bg-[rgb(36,36,36)] border-gray-700" />
+          <CarouselPrevious className="left-1 !bg-[rgb(15,15,15)] hover:bg-[rgb(36,36,36)] border-gray-700" />
+          <CarouselNext className="right-1 !bg-[rgb(15,15,15)] hover:bg-[rgb(36,36,36)] border-gray-700" />
         </Carousel>
       </section>
+
+      <div className="pt-52 !bg-gradient-to-b !from-black !to-[rgb(22,22,22)]  flex flex-col gap-y-10 items-center justify-center overflow-hidden">
+        <motion.div
+          variants={slideVariants}
+          {...whileViewProps}
+          className="pb-16 !bg-transparent"
+        >
+          <h1 className="text-8xl p-4">Start creating your own</h1>
+        </motion.div>
+        <div className="rotateImgEffectParent overflow-hidden relative">
+          <Image
+            src="/assets/images/blogHome.png"
+            alt="blog-home"
+            width={950}
+            height={950}
+            priority
+            className=" rotateImgEffectReverse rounded-md"
+          />
+        </div>
+      </div>
+
+      <div className="container mx-auto p-4 pt-52">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
+          {landingPageBlogGrid.map((item, index) => (
+            <motion.div
+              key={index}
+              className="bg-[rgb(18,18,18)] p-6 rounded-lg shadow-md"
+              variants={gridVariants}
+              {...whileViewProps}
+              custom={index}
+              whileHover={{ scale: 1.05 }}
+            >
+              <h3 className="text-white font-bold">{item.title}</h3>
+              <p className="text-gray-400">{item.description}</p>
+            </motion.div>
+          ))}
+        </div>
+      </div>
+
+      <div className=" pt-56 pb-56 flex flex-col justify-center items-center !bg-gradient-to-b !from-[rgb(22,22,22)]  !to-[rgb(97,97,102)]">
+        <div className="flex flex-col gap-y-7 items-center justify-center">
+          <h1 className="text-[rgba(65,65,66,0.61)] text-7xl text-shadow-hover p-4">
+            Haven't Started Yet?
+          </h1>
+          <motion.button
+            className=" flex items-center gap-1 px-6 py-3 bg-[rgb(86,86,88)] text-white rounded-lg shadow-md hover:bg-[rgb(73,73,75)] cursor-pointer"
+            variants={itemVariants}
+            {...animationProps}
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+            onClick={() => router.push("/login")}
+          >
+            <Globe size={30} color="#FFFFFF" />
+            Start your journey
+          </motion.button>
+        </div>
+      </div>
+
+      <div className="flex justify-center items-center w-full h-24 !bg-[rgb(97,97,102)]">
+        <p className="text-gray-400 text-sm">
+          © 2025 Blography. All rights reserved.
+        </p>
+      </div>
     </div>
   );
 }
-
-
-
-

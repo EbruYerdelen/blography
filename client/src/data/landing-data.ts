@@ -36,3 +36,46 @@ export const landingPageBlogPosts: LandingPageBlogData[] = [
     date: "2023-11-05",
   },
 ];
+
+export const landingPageBlogGrid: LandingGridProps[] = [
+  {
+    title: "Global Perspectives",
+    description:
+      "Curated stories from every corner of the world – experience cultures through authentic narratives.",
+  },
+  {
+    title: "Seamless Publishing",
+    description:
+      "Your words deserve perfect formatting. Our distraction-free editor makes publishing effortless.",
+  },
+  {
+    title: "Thoughtful Curation",
+    description:
+      "Algorithm-free discovery. We surface content that matters, not what trends.",
+  },
+  {
+    title: "Privacy-First",
+    description:
+      "Your data stays yours. No tracking, no ads – just pure storytelling.",
+  },
+  {
+    title: "Spatial Journaling",
+    description:
+      "Pin your stories to a digital globe – see your writing journey unfold geographically.",
+  },
+  {
+    title: "Cross-Platform Sync",
+    description:
+      "Start writing on mobile, finish on desktop. Everything stays in sync.",
+  },
+  {
+    title: "Minimalist Design",
+    description:
+      "Content-first interface that adapts to your reading preferences.",
+  },
+  {
+    title: "Community Insights",
+    description:
+      "Get meaningful feedback from engaged readers, not empty likes.",
+  },
+];
