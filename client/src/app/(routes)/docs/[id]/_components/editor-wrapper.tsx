@@ -23,7 +23,7 @@ const EditorWrapper = ({ id, doc }: Props) => {
     console.log("Debounced content:", content, id);
   };
 
-  return <Editor onChange={handleContentChange} doc={doc} />;
+  return <Editor onChange={handleContentChange} doc={doc} id={id} />;
 };
 
 export default EditorWrapper;
