@@ -7,7 +7,7 @@ export default function BlogLayout({ children }: { children: ReactNode }) {
     <SidebarProvider defaultOpen={true}>
       <div className="flex w-full h-screen">
         <MinimalIntegrationSidebar />
-        <main className="flex-1 w-full overflow-auto">{children}</main>
+        <main className="flex-1 w-full overflow-x-hidden overflow-y-auto">{children}</main>
       </div>
     </SidebarProvider>
   );

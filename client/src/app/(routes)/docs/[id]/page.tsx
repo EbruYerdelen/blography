@@ -1,7 +1,15 @@
 import Image from "next/image";
 import EditorWrapper from "./_components/editor-wrapper";
+import { getDocumentById } from "@/services/server-document";
 
-const Docs = () => {
+type Props = {
+  params: Promise<{ id: string }>;
+};
+
+const Docs = async ({ params }: Props) => {
+  const { id } = await params;
+  const document = await getDocumentById(id);
+
   return (
     <div className="relative py-6">
       <Image
@@ -15,7 +23,7 @@ const Docs = () => {
         <h1 className="font-semibold text-white text-3xl">New Document</h1>
         <p className="text-neutral-400 text-sm">Updated at: 27/04/2025</p>
       </div>
-      <EditorWrapper />
+      <EditorWrapper id={id} doc={document} />
     </div>
   );
 };

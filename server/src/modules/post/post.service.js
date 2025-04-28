@@ -44,6 +44,13 @@ class PostService {
       throw error;
     }
   }
+  static async getPostsById(postId) {
+    try {
+      return await Post.findById(postId);
+    } catch (error) {
+      throw error;
+    }
+  }
 }
 
 module.exports = PostService;
