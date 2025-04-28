@@ -4,16 +4,10 @@ import Link from "next/link";
 import { Globe } from "phosphor-react";
 import { motion, stagger, useInView } from "framer-motion";
 import { useRef } from "react";
-import {
-  Carousel,
-  CarouselContent,
-  CarouselItem,
-  CarouselNext,
-  CarouselPrevious,
-} from "@/components/ui/Carousel";
 import { landingPageBlogGrid, landingPageBlogPosts } from "@/data/landing-data";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
+import { Marquee } from "@/components/magicui/marquee";
 
 
 const containerVariants = {
@@ -165,7 +159,7 @@ export default function LandingPage() {
         </motion.p>
       </motion.div>
 
-      <section className=" mx-auto py-12 px-4 !bg-black ">
+      <section className=" mx-auto py-12 !bg-black ">
         <motion.h2
           variants={gridVariants}
           {...whileViewProps}
@@ -175,46 +169,39 @@ export default function LandingPage() {
           No limits to your creativity
         </motion.h2>
 
-        <Carousel
-          opts={{
-            align: "start",
-            loop: true,
-          }}
-          className="w-full"
-        >
-          <CarouselContent>
+        <div className="relative overflow-hidden">
+          <Marquee pauseOnHover={true} className="py-4 [--duration:50s]">
             {landingPageBlogPosts.map((post) => (
-              <CarouselItem key={post.id} className="md:basis-1/2 lg:basis-1/3">
-                <div className="p-2 h-full">
-                  <article className="bg-[rgb(20,20,20)] border border-white rounded-md p-6 h-full flex flex-col hover:border-gray-600 transition-colors">
-                    <div className="flex items-center mb-3">
-                      <span className="flex h-3 w-3 relative mr-2">
-                        <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-gray-400 opacity-75"></span>
-                        <span className="relative inline-flex rounded-full h-3 w-3 bg-gray-500"></span>
-                      </span>
-                      <time className="text-sm text-gray-400">
-                        {new Date(post.date).toLocaleDateString("en-US", {
-                          month: "short",
-                          day: "numeric",
-                        })}
-                      </time>
-                    </div>
+              <div key={post.id} className="mx-2 w-[350px] flex-shrink-0">
+                <article className="bg-[rgb(20,20,20)] rounded-md p-6 h-full flex flex-col hover:border-gray-600 transition-colors">
+                  <div className="flex items-center mb-3">
+                    <span className="flex h-3 w-3 relative mr-2">
+                      <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-gray-400 opacity-75"></span>
+                      <span className="relative inline-flex rounded-full h-3 w-3 bg-gray-500"></span>
+                    </span>
+                    <time className="text-sm text-gray-400">
+                      {new Date(post.date).toLocaleDateString("en-US", {
+                        month: "short",
+                        day: "numeric",
+                      })}
+                    </time>
+                  </div>
 
-                    <h3 className="text-xl font-semibold text-gray-100 mb-3 line-clamp-2">
-                      {post.title}
-                    </h3>
+                  <h3 className="text-xl font-semibold text-gray-100 mb-3 line-clamp-2">
+                    {post.title}
+                  </h3>
 
-                    <p className="text-gray-300 mb-4 line-clamp-3 flex-grow">
-                      {post.description}
-                    </p>
-                  </article>
-                </div>
-              </CarouselItem>
+                  <p className="text-gray-300 mb-4 line-clamp-3 flex-grow">
+                    {post.description}
+                  </p>
+                </article>
+              </div>
             ))}
-          </CarouselContent>
-          <CarouselPrevious className="left-1 !bg-[rgb(15,15,15)] hover:bg-[rgb(36,36,36)] border-gray-700" />
-          <CarouselNext className="right-1 !bg-[rgb(15,15,15)] hover:bg-[rgb(36,36,36)] border-gray-700" />
-        </Carousel>
+          </Marquee>
+
+          <div className="-right-1 z-40 absolute inset-y-0 bg-gradient-to-l from-[#070707] w-1/3 pointer-events-none"></div>
+          <div className="-left-1 z-40 absolute inset-y-0 bg-gradient-to-r from-[#070707] w-1/3 pointer-events-none"></div>
+        </div>
       </section>
 
       <div className="pt-52 !bg-gradient-to-b !from-black !to-[rgb(22,22,22)]  flex flex-col gap-y-10 items-center justify-center overflow-hidden">
@@ -282,3 +269,7 @@ export default function LandingPage() {
     </div>
   );
 }
+
+
+
+
