@@ -2,18 +2,28 @@
 
 import "@blocknote/core/fonts/inter.css";
 import { BlockNoteView } from "@blocknote/mantine";
-import { useCreateBlockNote } from "@blocknote/react";
+import { Block } from "@blocknote/core";
 import "@blocknote/mantine/style.css";
+import { useCreateBlockNote } from "@blocknote/react";
 import { useEffect, useState, useCallback } from "react";
 import { EditorSkeleton } from "./editor-skeleton";
 
 export const Editor = ({
   onChange,
+  doc,
 }: {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  onChange?: (content: any) => void;
+  onChange: (content: any) => void;
+  doc: {
+    title: string;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    content: any;
+    updatedAt: string;
+  };
 }) => {
   const [isMounted, setIsMounted] = useState(false);
+  const [blocks, setBlocks] = useState<Block[]>([]);
+  const [timeoutId, setTimeoutId] = useState<NodeJS.Timeout | null>(null);
 
   const editor = useCreateBlockNote({
     initialContent: [
@@ -36,27 +46,34 @@ export const Editor = ({
     ],
   });
 
-  const handleEditorBlur = useCallback(() => {
-    if (isMounted && onChange) {
-      onChange(editor.document);
-    }
-  }, [isMounted, onChange, editor]);
+  const debouncedOnChange = useCallback(
+    (content: Block[]) => {
+      setBlocks(content);
+      if (timeoutId) {
+        clearTimeout(timeoutId);
+      }
+
+      const newTimeoutId = setTimeout(() => {
+        onChange(content);
+      }, 1000);
+
+      setTimeoutId(newTimeoutId);
+    },
+    [onChange, timeoutId]
+  );
+
+  useEffect(() => {
+    return () => {
+      if (timeoutId) {
+        clearTimeout(timeoutId);
+      }
+    };
+  }, [timeoutId]);
 
   useEffect(() => {
     setIsMounted(true);
     return () => {};
   }, []);
-
-  useEffect(() => {
-    if (!isMounted) return;
-
-    const editorInstance = editor._tiptapEditor;
-    editorInstance.on("blur", handleEditorBlur);
-
-    return () => {
-      editorInstance.off("blur", handleEditorBlur);
-    };
-  }, [editor, handleEditorBlur, isMounted]);
 
   if (!isMounted) {
     return <EditorSkeleton />;
@@ -67,7 +84,9 @@ export const Editor = ({
       <BlockNoteView
         editor={editor}
         className="editor-container"
-        onBlur={handleEditorBlur}
+        onChange={() => {
+          debouncedOnChange(editor.document);
+        }}
         theme="dark"
       />
     </div>

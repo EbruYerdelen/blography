@@ -7,13 +7,23 @@ const Editor = dynamic(() => import("./editor").then((mod) => mod.Editor), {
   loading: () => <EditorSkeleton />,
 });
 
-const EditorWrapper = () => {
+type Props = {
+  id: string;
+  doc: {
+    title: string;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    content: any;
+    updatedAt: string;
+  };
+};
+
+const EditorWrapper = ({ id, doc }: Props) => {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const handleContentChange = (content: any) => {
-    console.log("Debounced content:", content);
+    console.log("Debounced content:", content, id);
   };
 
-  return <Editor onChange={handleContentChange} />;
+  return <Editor onChange={handleContentChange} doc={doc} />;
 };
 
 export default EditorWrapper;
