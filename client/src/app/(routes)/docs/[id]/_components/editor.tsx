@@ -90,15 +90,15 @@ const Editor = ({ id }: { id: string }) => {
   }
 
   return (
-    <div className="pt-2 px-4 pb-4">
-      <div className="flex sm:flex-row sm:justify-between sm:items-center mb-4 flex-col gap-2">
-        <p className="text-neutral-400 text-sm pl-[69px]">
+    <div className="px-4 pt-2 pb-4">
+      <div className="flex sm:flex-row flex-col sm:justify-between sm:items-center gap-2 mb-4">
+        <p className="pl-[69px] text-neutral-400 text-sm">
           Updated at: 27/04/2025
         </p>
         <button
           onClick={handleSave}
           disabled={isSaving}
-          className="sm:bg-[rgb(7,7,7)] bg-[rgb(14,14,14)] hover:bg-[rgb(36,36,36)] active:bg-[rgb(50,50,50)] disabled:bg-[rgb(60,60,60)] px-4 py-2 rounded-md text-white transition-all duration-200 disabled:cursor-not-allowed w-36 sm:w-auto sm:ml-0 ml-[69px] shadow-md hover:shadow-lg active:shadow-sm"
+          className="bg-[rgb(14,14,14)] sm:bg-[rgb(7,7,7)] hover:bg-[rgb(36,36,36)] active:bg-[rgb(50,50,50)] disabled:bg-[rgb(60,60,60)] shadow-md hover:shadow-lg active:shadow-sm ml-[69px] sm:ml-0 px-4 py-2 rounded-md w-36 sm:w-auto text-white transition-all translate-y-[-40px] duration-200 disabled:cursor-not-allowed"
         >
           {isSaving ? "Saving..." : "Save Changes"}
         </button>
@@ -113,4 +113,3 @@ const Editor = ({ id }: { id: string }) => {
 };
 
 export default Editor;
-
