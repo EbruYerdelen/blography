@@ -34,11 +34,15 @@ const HomePage = async () => {
             documents.slice(0, 5)?.map((document: any, i: number) => (
               <div
                 key={document._id}
-                className={`flex justify-between items-end p-4 border border-[#404040] w-full cursor-pointer ${i === 0 ? "rounded-t-md" : ""} ${
-                  i === documents.length - 1
-                    ? documents.length === 1
-                      ? "rounded-md"
-                      : "rounded-b-md"
+                className={`flex justify-between items-end p-4 border border-[#404040] ${i == 4 ? "!border-b rounded-b-md" : ""} w-full cursor-pointer ${i === 0 ? "rounded-t-md" : ""} ${
+                  i === 4 || i === documents.length - 1
+                    ? i === 4 && documents.length > 5
+                      ? "border-b"
+                      : documents.length === 1
+                        ? "rounded-md"
+                        : i === documents.length - 1
+                          ? "rounded-b-md"
+                          : ""
                     : "border-b-0"
                 }`}
               >
