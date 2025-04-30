@@ -1,5 +1,6 @@
 import { getDocuments } from "@/services/server-document";
 import { CuboidIcon as Cube, FileSpreadsheet, Search } from "lucide-react";
+import { NewDoc } from "./_components/new-doc";
 
 const HomePage = async () => {
   const documents = await getDocuments();
@@ -20,10 +21,7 @@ const HomePage = async () => {
         </div>
 
         <div className="flex items-center gap-3">
-          <div className="flex flex-col gap-2 bg-[#262626] p-4 border border-[#404040] rounded-md w-[160px] md:w-[280px] cursor-pointer">
-            <FileSpreadsheet className="max-md:size-4 text-white" />
-            <p className="text-neutral-200 text-sm">New Document</p>
-          </div>
+          <NewDoc />
           <div className="flex flex-col gap-2 bg-[#262626] p-4 border border-[#404040] rounded-md w-[160px] md:w-[280px] cursor-pointer">
             <Search className="max-md:size-4 text-white" />
             <p className="text-neutral-200 text-sm">Search</p>
@@ -48,10 +46,10 @@ const HomePage = async () => {
                   <div className="flex justify-center items-center bg-blue-500/5 mt-1 border border-border/40 rounded-sm w-8 h-8 text-blue-500 shrink-0">
                     <FileSpreadsheet className="text-[#2b7fff" size={16} />
                   </div>
-                  <h1 className="text-white text-base">{document.title}</h1>
+                  <h1 className="text-white text-base">{document?.title}</h1>
                 </div>
                 <p className="text-neutral-400 text-sm">
-                  {new Date(document.createdAt).toLocaleDateString()}
+                  {new Date(document?.createdAt).toLocaleDateString()}
                 </p>
               </div>
             ))}
