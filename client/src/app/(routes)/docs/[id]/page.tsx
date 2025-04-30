@@ -1,7 +1,6 @@
+import { getDocumentById } from "@/services/server-document";
 import Image from "next/image";
 import EditorWrapper from "./_components/editor-wrapper";
-import { getDocumentById } from "@/services/server-document";
-import { formatDate } from "@/helpers/formatDate";
 
 type Props = {
   params: Promise<{ id: string }>;

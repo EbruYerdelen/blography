@@ -6,8 +6,20 @@ import "@blocknote/mantine/style.css";
 import { useCreateBlockNote } from "@blocknote/react";
 import { useEffect, useState } from "react";
 import { EditorSkeleton } from "./editor-skeleton";
+import { formatDate } from "@/helpers/formatDate";
 
-const Editor = ({ id }: { id: string }) => {
+const Editor = ({
+  id,
+  document,
+}: {
+  id: string;
+  document: {
+    title: string;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    content: any;
+    createdAt: string;
+  };
+}) => {
   const [isMounted, setIsMounted] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
 
@@ -83,7 +95,7 @@ const Editor = ({ id }: { id: string }) => {
     };
     // Load saved content when component mounts
     loadData();
-  }, []);
+  }, [id]);
 
   if (!isMounted) {
     return <EditorSkeleton />;
@@ -92,8 +104,10 @@ const Editor = ({ id }: { id: string }) => {
   return (
     <div className="px-4 pt-2 pb-4">
       <div className="flex sm:flex-row flex-col sm:justify-between sm:items-center gap-2 mb-4">
-        <p className="pl-[69px] text-neutral-400 text-sm">
-          Updated at: 27/04/2025
+        <p className="pl-[53px] text-neutral-400 text-sm">
+          {document?.createdAt
+            ? `Created at : ${formatDate(document?.createdAt)}`
+            : ""}
         </p>
         <button
           onClick={handleSave}
