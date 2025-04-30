@@ -7,8 +7,20 @@ import { useCreateBlockNote } from "@blocknote/react";
 import { useEffect, useState } from "react";
 import { EditorSkeleton } from "./editor-skeleton";
 import axios from "axios";
+import { formatDate } from "@/helpers/formatDate";
 
-const Editor = ({ id }: { id: string }) => {
+const Editor = ({
+  id,
+  document,
+}: {
+  id: string;
+  document: {
+    title: string;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    content: any;
+    createdAt: string;
+  };
+}) => {
   const [isMounted, setIsMounted] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
 
@@ -79,28 +91,33 @@ const Editor = ({ id }: { id: string }) => {
     };
     // Load saved content when component mounts
     loadData();
-  }, []);
+  }, [id]);
 
   if (!isMounted) {
     return <EditorSkeleton />;
   }
 
   return (
-    <div className="p-4">
+    <div className="px-4 pt-2 pb-4">
+      <div className="flex sm:flex-row flex-col sm:justify-between sm:items-center gap-2 mb-4">
+        <p className="pl-[53px] text-neutral-400 text-sm">
+          {document?.createdAt
+            ? `Created at : ${formatDate(document?.createdAt)}`
+            : ""}
+        </p>
+        <button
+          onClick={handleSave}
+          disabled={isSaving}
+          className="bg-[rgb(14,14,14)] sm:bg-[rgb(7,7,7)] hover:bg-[rgb(36,36,36)] active:bg-[rgb(50,50,50)] disabled:bg-[rgb(60,60,60)] shadow-md hover:shadow-lg active:shadow-sm ml-[69px] sm:ml-0 px-4 py-2 rounded-md w-36 sm:w-auto text-white transition-all translate-y-[-40px] duration-200 disabled:cursor-not-allowed"
+        >
+          {isSaving ? "Saving..." : "Save Changes"}
+        </button>
+      </div>
       <BlockNoteView
         editor={editor}
         className="editor-container"
         theme="dark"
       />
-      <div className="flex justify-between items-center mt-4">
-        <button
-          onClick={handleSave}
-          disabled={isSaving}
-          className="bg-blue-600 hover:bg-blue-700 disabled:bg-blue-400 px-4 py-2 rounded text-white transition-colors disabled:cursor-not-allowed"
-        >
-          {isSaving ? "Saving..." : "Save Changes"}
-        </button>
-      </div>
     </div>
   );
 };

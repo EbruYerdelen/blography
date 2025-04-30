@@ -47,7 +47,7 @@ export async function GET(req: Request, { params }: any) {
 
 export async function PUT(request: Request, { params }: any) {
   try {
-    const { id } = params;
+    const { id } = await params;
     const cookieStore = cookies();
     const token = (await cookieStore).get("token")?.value;
 

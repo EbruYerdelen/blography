@@ -1,6 +1,8 @@
 @import "tailwindcss";
 @import "tw-animate-css";
 
+@custom-variant dark (&:is(.dark *));
+
 @theme inline {
   --radius-sm: calc(var(--radius) - 4px);
   --radius-md: calc(var(--radius) - 2px);
@@ -54,6 +56,24 @@
   --shadow-lg: var(--shadow-lg);
   --shadow-xl: var(--shadow-xl);
   --shadow-2xl: var(--shadow-2xl);
+  --animate-marquee: marquee var(--duration) infinite linear;
+  --animate-marquee-vertical: marquee-vertical var(--duration) linear infinite;
+  @keyframes marquee {
+  from {
+    transform: translateX(0);
+    }
+  to {
+    transform: translateX(calc(-100% - var(--gap)));
+    }
+  }
+  @keyframes marquee-vertical {
+  from {
+    transform: translateY(0);
+    }
+  to {
+    transform: translateY(calc(-100% - var(--gap)));
+    }
+  }
 }
 
 :root {
@@ -312,7 +332,6 @@ body {
   transform: rotateX(46deg) rotateY(-34deg) rotateZ(-315deg) scale(1.1) translateX(-2%);
 }
 
-
 .rotateImgEffectReverse {
   backface-visibility: hidden;
   transform: rotateX(49deg) rotateY(34deg) rotateZ(328deg) scale(1.1) translateX(2%);
@@ -322,4 +341,3 @@ body {
   transition: text-shadow 0.3s ease-in-out;
   text-shadow: 0px 0px 5px rgba(85, 85, 85, 0.692); 
 }
-

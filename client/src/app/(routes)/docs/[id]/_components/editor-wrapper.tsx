@@ -13,12 +13,12 @@ type Props = {
     title: string;
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     content: any;
-    updatedAt: string;
+    createdAt: string;
   };
 };
 
-const EditorWrapper = ({ id }: Props) => {
-  return <Editor id={id} />;
+const EditorWrapper = ({ id, doc }: Props) => {
+  return <Editor id={id} document={doc} />;
 };
 
 export default EditorWrapper;
