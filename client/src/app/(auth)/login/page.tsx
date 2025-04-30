@@ -49,7 +49,7 @@ export default function LoginPage() {
 
       if (result.success) {
         toast.success(result.message);
-        router.push("/dashboard");
+        router.push("/home");
       } else {
         toast.error(result.message);
       }
