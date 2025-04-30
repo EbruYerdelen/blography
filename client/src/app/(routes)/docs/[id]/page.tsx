@@ -21,8 +21,8 @@ const Docs = async ({ params }: Props) => {
         className="hidden md:block -top-20 right-0 left-0 z-0 absolute mx-auto w-screen max-w-screen h-screen max-h-screen pointer-events-none select-none"
       />
       <div className="flex flex-col gap-1 pl-[69px]">
-        <h1 className="font-semibold text-white text-3xl">{document.title ? document.title : "Untitled Document"}</h1>
-        <p className="text-neutral-400 text-sm">{document?.createdAt ? `Created at : ${formatDate(document.createdAt)}`: "Loading..."}</p>
+        <h1 className="font-semibold text-white text-3xl">{document.title ? document?.title : "Untitled Document"}</h1>
+        <p className="text-neutral-400 text-sm">{document?.createdAt ? `Created at : ${formatDate(document?.createdAt)}`: ""}</p>
       </div>
       <EditorWrapper id={id} doc={document} />
     </div>
