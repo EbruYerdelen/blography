@@ -9,7 +9,7 @@ export interface Document {
 }
 
 export async function fetchDocuments() {
-  const response = await fetch("http://localhost:3000/api/documents", {
+  const response = await fetch(`${process.env.NEXT_PUBLIC_FRONTEND_URL}/api/documents`, {
     next: { tags: ["documents"] },
   });
 
