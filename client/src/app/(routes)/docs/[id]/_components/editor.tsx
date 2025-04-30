@@ -67,7 +67,7 @@ const Editor = ({
     setIsSaving(true);
     try {
       const contentToSave = editor.document;
-      await axios.put(`http://localhost:3001/post/post/${id}`, {
+      await axios.put(`${process.env.NEXT_PUBLIC_SERVER_ULR}/post/post/${id}`, {
         content: JSON.stringify(contentToSave),
       }, {
         headers: {

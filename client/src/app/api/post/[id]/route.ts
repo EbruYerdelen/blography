@@ -16,7 +16,7 @@ export async function GET(req: Request, { params }: any) {
       );
     }
 
-    const response = await fetch(`http://localhost:3001/post/my/${id}`, {
+    const response = await fetch(`${process.env.NEXT_PUBLIC_SERVER_ULR}/post/my/${id}`, {
       method: "GET",
       headers: {
         Authorization: `Bearer ${token}`,
@@ -60,7 +60,7 @@ export async function PUT(request: Request, { params }: any) {
 
     const { content } = await request.json();
 
-    const response = await fetch(`http://localhost:3001/post/post/${id}`, {
+    const response = await fetch(`${process.env.NEXT_PUBLIC_SERVER_ULR}/post/post/${id}`, {
       method: "PUT",
       headers: {
         Authorization: `Bearer ${token}`,

@@ -16,7 +16,7 @@ export async function POST(request: Request) {
 
     const { title } = await request.json();
 
-    const response = await fetch("http://localhost:3001/post", {
+    const response = await fetch(`${process.env.NEXT_PUBLIC_SERVER_ULR}/post`, {
       method: "POST",
       headers: {
         Authorization: `Bearer ${token}`,
@@ -55,7 +55,7 @@ export async function GET() {
       );
     }
 
-    const response = await fetch("http://localhost:3001/post/my", {
+    const response = await fetch(`${process.env.NEXT_PUBLIC_SERVER_ULR}/post/my`, {
       method: "GET",
       headers: {
         Authorization: `Bearer ${token}`,

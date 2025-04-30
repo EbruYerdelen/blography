@@ -5,7 +5,7 @@ export async function getDocuments() {
   const cookieStore = cookies();
   const token = (await cookieStore).get("token")?.value;
   try {
-    const response = await fetch("http://localhost:3001/post/my", {
+    const response = await fetch(`${process.env.NEXT_PUBLIC_SERVER_ULR}/post/my`, {
       method: "GET",
       headers: {
         Authorization: `Bearer ${token}`,
@@ -28,7 +28,7 @@ export async function getDocumentById(id: string) {
   const cookieStore = cookies();
   const token = (await cookieStore).get("token")?.value;
   try {
-    const response = await fetch(`http://localhost:3001/post/my/${id}`, {
+    const response = await fetch(`${process.env.NEXT_PUBLIC_SERVER_ULR}/post/my/${id}`, {
       method: "GET",
       headers: {
         Authorization: `Bearer ${token}`,

@@ -12,7 +12,7 @@ export async function updateDocumentContent(id: string, content: any) {
   }
 
   try {
-    const response = await fetch(`http://localhost:3001/post/${id}`, {
+    const response = await fetch(`${process.env.NEXT_PUBLIC_SERVER_ULR}/post/${id}`, {
       method: "PUT",
       headers: {
         Authorization: `Bearer ${token}`,
